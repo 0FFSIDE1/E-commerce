@@ -5,7 +5,7 @@ E commerce version one
 
 1. Clone the repo.
  ```sh
- git clone "<repo_url>
+ git clone "<repo_url>"
 ```
 
 2. Navigate to v1 folder.
