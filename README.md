@@ -67,12 +67,12 @@ then, run this.
 then, run this.
 **from django.contrib.auth.models import User
 
->>> # Retrieve the user
->>> user = User.objects.get(username="<your_username>")
->>>
->>> # Set the password
->>> user.set_password("your_new_password")
->>>
+# Retrieve the user
+ user = User.objects.get(username="<your_username>")
+
+ # Set the password
+user.set_password("your_new_password")
+
 # Save the user
 user.save()
 
