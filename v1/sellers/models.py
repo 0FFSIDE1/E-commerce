@@ -9,3 +9,6 @@ class Vendor(models.Model):
     email = models.EmailField(max_length=50, default=None, blank=False, null=False)
     phone = PhoneNumberField(_("Phone Number"), unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name

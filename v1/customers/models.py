@@ -12,5 +12,8 @@ class Customer(models.Model):
     email = models.EmailField(default=None, unique=True, null=False, blank=False)
     phone = PhoneNumberField(_("Phone Number"), unique=True)
     address = models.CharField(max_length=100, default=None, blank=False, null=False)
-    ip_address = models.GenericIPAddressField(_(""), protocol="both", unpack_ipv4=False, null=True, blank=True)
+    ip_address = models.GenericIPAddressField(_("ip address"), protocol="both", unpack_ipv4=False, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} | {self.email}"
