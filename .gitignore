@@ -1,6 +1,10 @@
 .env
 .venv
 venv
+venv/
+static
+.static
+static/
 *migrations
 *__pycache__
 __pycache__
