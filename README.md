@@ -58,28 +58,8 @@ if you encounter the following Error, when you run the code below
 
 ## Solutions using command line
 Run the following code below first to createsuperuser
-**python manage.py createsuperuser --noinput --username <your_username> --email <your_email>**
+**python manage.py createsuperuser --noinput**
 
-then, run this.
-**python manage.py shell**
-
-
-then, run this.
-**from django.contrib.auth.models import User
-
-# Retrieve the user
- user = User.objects.get(username="<your_username>")
-
- # Set the password
-user.set_password("your_new_password")
-
-# Save the user
-user.save()
-
-print("Password updated successfully!")**
-
-then, run this again.
-**python manage.py runserver**
 
 
 ## Updates 
