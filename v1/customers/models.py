@@ -9,6 +9,8 @@ User = get_user_model()
 class Customer(models.Model):
     customer_id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
+    first_name = models.CharField(max_length=25, default=None, blank=True)
+    last_name = models.CharField(max_length=25, default=None, blank=True)
     email = models.EmailField(default=None, unique=True, null=False, blank=False)
     phone = PhoneNumberField(_("Phone Number"), unique=True)
     address = models.CharField(max_length=100, default=None, blank=False, null=False)
@@ -16,4 +18,4 @@ class Customer(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} | {self.email}"
+        return f"{self.first_name} | {self.last_name} | {self.email}"

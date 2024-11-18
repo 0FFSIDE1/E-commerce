@@ -14,6 +14,7 @@ class Product(models.Model):
     category_choices = (
         ('Appliances', 'Appliances'), 
         ('Phones & Tablets', 'Phones & Tablets'), 
+        ('Foodstuffs', 'Foodstuffs'), 
         ('Health & Beauty', 'Health & Beauty'), 
         ('Home & Office', 'Home & Office'), 
         ('Gaming', 'Gaming'), 

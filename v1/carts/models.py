@@ -7,4 +7,4 @@ class Cart(models.Model):
     product = models.ManyToManyField(Product, default=None)
     
     def __str__(self):
-        return f"{self.product} | {self.customer}"
+        return f"{self.customer}"
