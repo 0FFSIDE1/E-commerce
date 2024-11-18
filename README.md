@@ -82,5 +82,6 @@ then, run this again.
 **python manage.py runserver**
 
 
-## Updates always keep ypur branch updated with the dev branch
+## Updates 
+Always keep your branch updated with the dev branch
 
