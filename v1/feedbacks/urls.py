@@ -5,6 +5,6 @@ from .views import *
 
 urlpatterns = [
    path('', Feedbacks_view.as_view(), name='all-feedbacks'),
-   path('', Feedback_detail.as_view(), name='feedback-detail'),
+   path('<str:pk>/feedback', Feedback_detail.as_view(), name='feedback-detail'),
     
 ]
