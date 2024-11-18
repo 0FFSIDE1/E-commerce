@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 User = get_user_model()
 class Customer(models.Model):
     customer_id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=False, null=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
     email = models.EmailField(default=None, unique=True, null=False, blank=False)
     phone = PhoneNumberField(_("Phone Number"), unique=True)
     address = models.CharField(max_length=100, default=None, blank=False, null=False)
