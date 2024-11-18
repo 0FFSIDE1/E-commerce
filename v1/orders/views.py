@@ -15,7 +15,7 @@ class Order_View(generics.ListCreateAPIView):
     # To retrieve the order based on the status
     def get_queryset(self):
         user = self.request.user
-        queryset = Order.objects.filter(user=user)
+        queryset = Order.objects.filter(customer=user)
 
         
         status_filter = self.request.query_params.get('status', None)
