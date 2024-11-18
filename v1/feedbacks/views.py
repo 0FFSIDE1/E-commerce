@@ -2,31 +2,31 @@ from django.shortcuts import render
 from rest_framework import generics 
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
-from .models import Product
+from .models import Feedback
 from rest_framework import status
-from services.serializers.product import ProductSerializer
-from services.utils.product import *
+from services.serializers.feedback import FeedbackSerializer
+from services.utils.feedback import *
 from services.utils.error import Error_Response
 from django.http import Http404
 
 # Create your views here.
-class Products_view(generics.ListCreateAPIView):
+class Feedbacks_view(generics.ListCreateAPIView):
         """
-        GET: Retrieves all Product record
-        POST: Add new Product record
-        queryset: All rows in Product Entity (total number of Products)
-        serializer_class: All columns in Product Entity
+        GET: Retrieves all Feedback record
+        POST: Add new Feedback record
+        queryset: All rows in Feedback Entity (total number of Feedbacks)
+        serializer_class: All columns in Feedback Entity
         """
-        queryset = Product.objects.all()
-        serializer_class = ProductSerializer
+        queryset = Feedback.objects.all()
+        serializer_class = FeedbackSerializer
         
         # GET
         def list(self, request, *args, **kwargs):
             queryset = self.get_queryset()
             serializer = self.get_serializer(queryset, many=True)
-            return Response(get_products_response(
+            return Response(get_feedbacks_response(
                 queryset = queryset.count(), 
-                product = serializer.data),
+                feedback = serializer.data),
                 status = status.HTTP_200_OK,
             )
 
@@ -35,39 +35,39 @@ class Products_view(generics.ListCreateAPIView):
             serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
-            return Response(post_products_response(
-                product = serializer.data,     
+            return Response(post_feedbacks_response(
+                feedback = serializer.data,     
             ), status = status.HTTP_201_CREATED)
         
 
-class Product_detail(generics.RetrieveUpdateDestroyAPIView):
+class Feedback_detail(generics.RetrieveUpdateDestroyAPIView):
     """
-       GET: Retrieves specific Product record
-       PUT and PATCH: update specific Product record
-       DELETE: delete specific Product record
-       queryset: all row in Product Entity
-       serializer_class: All columns in Product Entity
+       GET: Retrieves specific Feedback record
+       PUT and PATCH: update specific Feedback record
+       DELETE: delete specific Feedback record
+       queryset: all row in Feedback Entity
+       serializer_class: All columns in Feedback Entity
     """
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+    queryset = Feedback.objects.all()
+    serializer_class = FeedbackSerializer
     
     def get_object(self):
         try:
             return super().get_object()
         except Http404:
-            raise NotFound(detail=Error_Response(error="ProductNotFound", message="Product"), code=404)
+            raise NotFound(detail=Error_Response(error="FeedbackNotFound", message="Feedback"), code=404)
        
     # def check_permissions(self, request):
-    #     if not request.user.has_perm('Products.change_Product'):
+    #     if not request.user.has_perm('Feedbacks.change_Feedback'):
     #         raise PermissionDenied({"error": "You do not have permission to update this object."})
     #     return super().check_permissions(request)
 
     # GET
     def retrieve(self, request, *args, **kwargs):
-        Product = self.get_object()
-        serializer = self.get_serializer(Product)
-        return Response(retrieve_product_response_data(
-            product = serializer.data,
+        Feedback = self.get_object()
+        serializer = self.get_serializer(Feedback)
+        return Response(retrieve_feedback_response_data(
+            feedback = serializer.data,
         ), status=status.HTTP_200_OK)
 
     # Update
@@ -77,13 +77,13 @@ class Product_detail(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        return Response(update_product_response_data(
-            product = serializer.data,
+        return Response(update_feedback_response_data(
+            feedback = serializer.data,
         ), status=status.HTTP_200_OK)
     
     # Delete
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-        return Response(destroy_product_response_data(), 
+        return Response(destroy_feedback_response_data(), 
                         status=status.HTTP_204_NO_CONTENT)

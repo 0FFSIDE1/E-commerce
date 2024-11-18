@@ -4,6 +4,7 @@ from .views import *
 
 
 urlpatterns = [
-   # path('', view='your_view', name='reverse_name')
+   path('', Products_view.as_view(), name='all-Products'),
+   path('', Product_detail.as_view(), name='Product-detail'),
     
 ]
