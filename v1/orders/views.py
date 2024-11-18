@@ -8,14 +8,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 # Create your views here.
-class OrderserializerView(generics.ListCreateAPIView):
+class Order_View(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]  
 
     # To retrieve the order based on the status
     def get_queryset(self):
         user = self.request.user
-        queryset = Order.objects.filter(customer__user=user)
+        queryset = Order.objects.filter(user=user)
 
         
         status_filter = self.request.query_params.get('status', None)
