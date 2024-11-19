@@ -12,7 +12,7 @@ class Notification(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True)
     
-    opened_at = models.DateTimeField(auto_now=True, null=True)
+    opened_at = models.DateTimeField(default=None, null=True, blank=True)
     
     choices = (('unread', 'unread'), ('expired', 'expired'), ('read', 'read'))
     status = models.CharField(choices=choices, default='unread', max_length=10)

@@ -179,7 +179,7 @@ from celery.schedules import crontab
 
 CELERY_BEAT_SCHEDULE = {
     'delete-old-notifications': {
-        'task': 'notifications.tasks.delete_old_notifications',
+        'task': 'notifications.tasks.delete_notifications_task',
         'schedule': crontab(minute=0, hour=0),  # Run daily at midnight
     },
 }

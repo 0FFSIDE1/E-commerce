@@ -14,6 +14,6 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # Automatically discover tasks in registered Django apps
 app.autodiscover_tasks()
 
-# @app.task(bind=True)
-# def debug_task(self):
-#     print(f'Request: {self.request!r}')
+@app.task(bind=True)
+def debug_task(self):
+    print(f'Request: {self.request!r}')
