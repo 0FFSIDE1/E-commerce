@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'sellers',
     'reviews',
     'feedbacks',
+    "newsletter",
+    "notifications",
 
     # Third-Party Libraries
     'phonenumber_field',
