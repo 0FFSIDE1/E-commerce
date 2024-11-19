@@ -33,16 +33,16 @@ class Products_view(generics.ListCreateAPIView):
             product_type = request.query_params.get('product_type')  # e.g., ?product_type=mobile phone
 
             if category:
-                queryset = queryset.filter(category=category.capitalize())  # Case-insensitive filter
-            elif name:
-                queryset = queryset.filter(name=name.capitalize())  
-            elif vendor:
-                queryset = queryset.filter(vendor=vendor.capitalize()) 
-            elif brand:
-               queryset = queryset.filter(brand=brand.capitalize())
-            elif product_type:
-               queryset = queryset.filter(type__icontains=product_type.capitalize())
-            elif section:
+                queryset = queryset.filter(category__icontains=category.capitalize())  # Case-insensitive filter
+            if name:
+                queryset = queryset.filter(name__icontains=name.capitalize())  
+            if vendor:
+                queryset = queryset.filter(vendor__icontains=vendor.capitalize()) 
+            if brand:
+               queryset = queryset.filter(brand__icontains=brand.capitalize())
+            if product_type:
+               queryset = queryset.filter(product_type__icontains=product_type.capitalize())
+            if section:
                 queryset = queryset.filter(section__icontains=section.capitalize())
 
             serializer = self.get_serializer(queryset, many=True)
