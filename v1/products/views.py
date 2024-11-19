@@ -23,7 +23,30 @@ class Products_view(generics.ListCreateAPIView):
         # GET
         def list(self, request, *args, **kwargs):
             queryset = self.get_queryset()
+
+            # Filter by query parameters
+            category = request.query_params.get('category')  # e.g., ?category=electronics
+            name = request.query_params.get('name')  # e.g., ?name=iphone
+            vendor = request.query_params.get('vendor') # e.g., ?vendor=vendor
+            section = request.query_params.get('section') # e.g., ?section=New arrivals
+            brand = request.query_params.get('brand')  # e.g., ?brand=nike
+            product_type = request.query_params.get('product_type')  # e.g., ?product_type=mobile phone
+
+            if category:
+                queryset = queryset.filter(category=category.capitalize())  # Case-insensitive filter
+            elif name:
+                queryset = queryset.filter(name=name.capitalize())  
+            elif vendor:
+                queryset = queryset.filter(vendor=vendor.capitalize()) 
+            elif brand:
+               queryset = queryset.filter(brand=brand.capitalize())
+            elif product_type:
+               queryset = queryset.filter(type__icontains=product_type.capitalize())
+            elif section:
+                queryset = queryset.filter(section__icontains=section.capitalize())
+
             serializer = self.get_serializer(queryset, many=True)
+            
             return Response(get_products_response(
                 queryset = queryset.count(), 
                 product = serializer.data),
