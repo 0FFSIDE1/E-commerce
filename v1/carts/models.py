@@ -1,10 +1,25 @@
 from django.db import models
-from customers.models import Customer
+from django.conf import settings
+from uuid import uuid4
 from products.models import Product
-# Create your models here.
+
 class Cart(models.Model):
-    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, default=None, blank=True, null=True)
-    product = models.ManyToManyField(Product, default=None)
-    
+    session_id = models.CharField(max_length=255, null=True, blank=True)  # This is the logic for anonymous users
+    customer = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
-        return f"{self.customer}"
+        return self.customer.username if self.customer else f"Cart ({self.session_id})"
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="items")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    @property
+    def total_price(self):
+        return float(self.product.name) * self.quantity
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name}"
