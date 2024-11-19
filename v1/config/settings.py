@@ -46,13 +46,14 @@ INSTALLED_APPS = [
     'sellers',
     'reviews',
     'feedbacks',
-    "newsletter",
-    "notifications",
+    'notifications',
 
     # Third-Party Libraries
     'phonenumber_field',
     'rest_framework',
     'rest_framework_simplejwt',
+    'celery',
+    'django_celery_beat',
 
 ]
 
@@ -171,3 +172,20 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# settings.py
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    'delete-old-notifications': {
+        'task': 'notifications.tasks.delete_notifications_task',
+        'schedule': crontab(minute=0, hour=0),  # Run daily at midnight
+    },
+}
+
+# settings.py
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Adjust for your Redis setup
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Adjust for your Redis setup

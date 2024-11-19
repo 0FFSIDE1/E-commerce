@@ -4,7 +4,6 @@ import os
 import sys
 import dotenv
 
-
 dotenv.load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
 def main():
@@ -23,3 +22,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # from dump_data import *
+    # generate_random_products()
+    
