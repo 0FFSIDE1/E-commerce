@@ -16,4 +16,4 @@ class Review(models.Model):
             raise ValidationError("Rating must be between 0.0 and 5.0")
 
     def __str__(self):
-        return f"product rating: {self.rating} | {self.product.item_name}"
+        return f"product rating: {self.rating} | {self.product.name}"
