@@ -24,4 +24,4 @@ class CartItem(models.Model):
         return float(self.product.name) * self.quantity
 
     def __str__(self):
-        return f"{self.product.name}: {self.quantity}"
+        return f"Cart Owner {self.cart.customer.username if self.cart.customer else f"Cart({self.cart.session_id})"} ordered {self.product.name}: {self.quantity}"

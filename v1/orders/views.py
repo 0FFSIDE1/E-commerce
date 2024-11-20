@@ -8,6 +8,10 @@ from services.utils.order import *
 from django.http import Http404
 from rest_framework.exceptions import NotFound
 
+class OrderList_APIView(generics.ListAPIView):
+    queryset = Order.objects.prefetch_related('items__product')
+    serializer_class = OrderSerializer
+
 
 class Order_View(generics.ListAPIView):
 
@@ -101,3 +105,4 @@ class Order_DetailView(generics.RetrieveUpdateDestroyAPIView):
             destroy_order_response_data(),
             status=status.HTTP_204_NO_CONTENT
         )
+    

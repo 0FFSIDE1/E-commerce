@@ -17,6 +17,8 @@ class CartItemSerializer(serializers.ModelSerializer):
     )
     product_details = ProductSerializer(source="product", read_only=True)
     total_price = serializers.SerializerMethodField()
+    customer_name = serializers.SerializerMethodField()
+
 
     class Meta:
         model = CartItem
@@ -24,3 +26,12 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     def get_total_price(self, obj):
         return float(obj.product.price) * obj.quantity
+    
+    def get_customer_name(self, obj):
+        """
+        Retrieve the customer's username from the associated Cart object.
+        If no customer is linked, return None.
+        """
+        if obj.cart.customer:
+            return obj.cart.customer.username
+        return obj.cart.session_id
