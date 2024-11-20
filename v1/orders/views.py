@@ -7,11 +7,15 @@ from customers.models import Customer
 from services.utils.order import *
 from django.http import Http404
 from rest_framework.exceptions import NotFound
+<<<<<<< HEAD
 
 class OrderList_APIView(generics.ListAPIView):
     queryset = Order.objects.prefetch_related('items__product')
     serializer_class = OrderSerializer
 
+=======
+from rest_framework import status
+>>>>>>> origin/dev
 
 class Order_View(generics.ListAPIView):
 
