@@ -1,41 +1,96 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
-from carts.models import Cart, CartItem
-from products.models import Product
-from services.utils.cart import get_or_create_cart
+from rest_framework.generics import (GenericAPIView, ListAPIView, CreateAPIView, RetrieveUpdateAPIView)
+from rest_framework.response import Response
+from .models import CartItem, Product, Cart
+from services.utils.cart import get_or_create_cart, get_product_or_404
+from services.serializers.cart import CartItemSerializer, CartSerializer
+from rest_framework.exceptions import NotFound
+from rest_framework.views import APIView
+from rest_framework import mixins
+from rest_framework import generics
+from uuid import uuid4
+from django.db.models import F
 
-class Cart_View(APIView):
-    def get(self, request):
-        cart = get_or_create_cart(request)
-        items = cart.items.all()
-        cart_data = {
-            "cart_id": cart.id,
-            "items": [{"product": item.product.item_name, "quantity": item.quantity, "total_price": item.total_price} for item in items],
-        }
-        return Response(cart_data, status=status.HTTP_200_OK)
+# To create a cartitem
+class Create_View(generics.CreateAPIView):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
 
-    def post(self, request):
-        cart = get_or_create_cart(request)
-        product_id = request.data.get("product_id")
-        quantity = request.data.get("quantity", 1)
+# TO view cartitem based on a specific user
+class Items_View(generics.ListAPIView):
+    serializer_class = CartItemSerializer
 
-        product = Product.objects.get(pk=product_id)
-        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-        if not created:
-            cart_item.quantity += int(quantity)
-        else:
-            cart_item.quantity = int(quantity)
-        cart_item.save()
+    def get_queryset(self):
+        # Get customer name from the URL
+        customer_name = self.kwargs.get("customer_name")
+        if not customer_name:
+            raise NotFound("Customer name is required.")
 
-        return Response({"message": "Product added to cart."}, status=status.HTTP_201_CREATED)
+        # Try to find the cart for an authenticated user
+        carts = Cart.objects.filter(customer__username=customer_name)
 
-    def delete(self, request):
-        cart = get_or_create_cart(request)
-        product_id = request.data.get("product_id")
+        # If no authenticated user cart, try finding by session ID
+        if not carts.exists():
+            carts = Cart.objects.filter(session_id=customer_name)
 
-        cart_item = CartItem.objects.filter(cart=cart, product_id=product_id).first()
-        if cart_item:
-            cart_item.delete()
-            return Response({"message": "Product removed from cart."}, status=status.HTTP_200_OK)
-        return Response({"error": "Product not found in cart."}, status=status.HTTP_404_NOT_FOUND)
+        if not carts.exists():
+            raise NotFound(f"No cart found for customer: {customer_name}")
+
+        # Retrieve all CartItems associated with the matching carts
+        return CartItem.objects.filter(cart__in=carts)
+
+# To update a cartitem based on a specific user
+class Update_View(generics.RetrieveUpdateAPIView):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
+    # lookup_pk = "customer_name"
+
+class Destroy_View(generics.RetrieveDestroyAPIView):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
+
+    # def update(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     serializer = self.get_serializer(instance, data=request.data, partial=True)
+
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response({"message": "Updated successfully"})
+
+    #     else:
+    #         return Response({"message": "failed", "details": serializer.errors})
+
+
+# class listview(generics.ListAPIView):
+#     queryset = CartItem.objects.all()
+#     serializer_class = CartItemSerializer
+#     lookup_url_kwarg = "customer_name"
+
+# specific based view logic
+# class Items_View(generics.RetrieveAPIView):
+#     serializer_class = CartItemSerializer
+
+#     def get_object(self):
+#         # Get customer name from the URL
+#         customer_name = self.kwargs.get("customer_name")
+#         if not customer_name:
+#             raise NotFound("Customer name is required.")
+
+#         # Try to find the cart for an authenticated user
+#         try:
+#             cart = Cart.objects.filter(customer__username=customer_name)
+#         except Cart.DoesNotExist:
+#             # If no authenticated user cart, try finding by session ID
+#             try:
+#                 cart = Cart.objects.filter(session_id=customer_name)
+#             except Cart.DoesNotExist:
+#                 raise NotFound(f"No cart found for customer: {customer_name}")
+
+#         # Return the first cart item associated with the cart (or handle as needed)
+#         cart_items = CartItem.objects.filter(cart=cart)
+#         if not cart_items.exists():
+#             raise NotFound(f"No items found in the cart for customer: {customer_name}")
+
+#         return cart_items.objects,filter(cart__in=cart)  # For `RetrieveAPIView`, return a single object
+
+
