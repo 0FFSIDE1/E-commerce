@@ -21,7 +21,7 @@ class Payment(models.Model):
         default='Pending',
     )
     payment_method = models.CharField(max_length=50)
-    transaction_reference = models.AutoField(default=uuid.uuid4, editable=False)
+    ref = models.CharField(default=uuid.uuid4, editable=False, max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
