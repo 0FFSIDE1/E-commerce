@@ -196,3 +196,11 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Adjust for your Redis setu
 
 PAYSTACK_SECRET_KEY= os.environ.get('PAYSTACK_SECRET_KEY')
 PAYSTACK_PUBLIC_KEY= os.environ.get('PAYSTACK_PUBLIC_KEY')
+
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+EMAIL_BACKEND=os.environ.get('EMAIL_BACKEND')
+EMAIL_HOST=os.environ.get('EMAIL_HOST')
+EMAIL_USE_TLS=os.environ.get('EMAIL_USE_TLS')
+EMAIL_PORT=os.environ.get('EMAIL_PORT')
+EMAIL_HOST_USER=os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD=os.environ.get('EMAIL_HOST_PASSWORD')
