@@ -2,15 +2,16 @@ from django.db import models
 from django.conf import settings
 from uuid import uuid4
 from products.models import Product
+from django.contrib.sessions.models import Session
 
 class Cart(models.Model):
-    session_id = models.CharField(max_length=255, null=True, blank=True)  # This is the logic for anonymous users
+    session_id = models.OneToOneField(Session, max_length=255, null=True, blank=True, on_delete=models.CASCADE)  # This is the logic for anonymous users
     customer = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True, blank=True, null=True)
 
     def __str__(self):
-        return self.customer.username if self.customer else f"Cart ({self.session_id})"
+        return self.customer.username if self.customer else f"session id: {self.session_id}"
 
 
 class CartItem(models.Model):

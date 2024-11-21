@@ -17,7 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
 from datetime import timedelta
 import os
-
+from celery.schedules import crontab
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'feedbacks',
     'notifications',
     'newsletter',
+    'app',
 
     # Third-Party Libraries
     'phonenumber_field',
@@ -176,8 +177,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# settings.py
-from celery.schedules import crontab
+
 
 CELERY_BEAT_SCHEDULE = {
     'delete-old-notifications': {
@@ -186,14 +186,13 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-# settings.py
+
 CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Adjust for your Redis setup
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Adjust for your Redis setup
 
 # paystack
-
 PAYSTACK_SECRET_KEY= os.environ.get('PAYSTACK_SECRET_KEY')
 PAYSTACK_PUBLIC_KEY= os.environ.get('PAYSTACK_PUBLIC_KEY')
 
