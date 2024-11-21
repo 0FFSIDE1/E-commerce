@@ -29,4 +29,5 @@ urlpatterns = [
     path('api/v1/feedbacks/', include('feedbacks.urls')),
     path('api/v1/notifications/', include('notifications.urls')),
     path('api/v1/newsletter/', include('newsletter.urls')),
+    path('api/v1/app/', include('app.urls')),
 ]
