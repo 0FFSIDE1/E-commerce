@@ -2,6 +2,7 @@ from django.core.mail import EmailMessage
 from io import BytesIO
 from reportlab.pdfgen import canvas
 
+
 def generate_invoice(order):
     buffer = BytesIO()
     p = canvas.Canvas(buffer)

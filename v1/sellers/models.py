@@ -18,7 +18,7 @@ class Vendor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, related_name="vendor")
     name = models.CharField(max_length=50, default=None, blank=False, null=False)
     address = models.CharField(max_length=225, default=None, blank=False, null=False)
-    email = models.EmailField(max_length=50, default=None, blank=False, null=False)
+    email = models.EmailField(max_length=50, default=None, blank=False, null=False, unique=True)
     phone = PhoneNumberField(_("Phone Number"), unique=True)
     currency = models.CharField(choices=currency, default="NGN", max_length=3)
     created_at = models.DateTimeField(auto_now_add=True)
