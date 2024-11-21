@@ -6,7 +6,6 @@ from products.models import Product
 class Cart(models.Model):
     session_id = models.CharField(max_length=255, null=True, blank=True)  # This is the logic for anonymous users
     customer = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
-    paid = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True, blank=True, null=True)
 
