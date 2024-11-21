@@ -196,3 +196,7 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Adjust for your Redis setu
 
 PAYSTACK_SECRET_KEY= os.environ.get('PAYSTACK_SECRET_KEY')
 PAYSTACK_PUBLIC_KEY= os.environ.get('PAYSTACK_PUBLIC_KEY')
+
+# phone number
+PHONENUMBER_DEFAULT_REGION = "NG"
+PHONENUMBER_DB_FORMAT = "NATIONAL" 
