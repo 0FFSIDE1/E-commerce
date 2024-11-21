@@ -8,7 +8,11 @@ class Vendor(models.Model):
     address = models.CharField(max_length=225, default=None, blank=False, null=False)
     email = models.EmailField(max_length=50, default=None, blank=False, null=False, unique=True)
     phone = PhoneNumberField(_("Phone Number"), unique=True)
+    total_products = models.CharField(max_length=None, default=None, null=False, blank=False)
+    
+
     created_at = models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
         return self.name

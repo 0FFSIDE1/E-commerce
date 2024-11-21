@@ -53,7 +53,7 @@ class Product(models.Model):
     quantity = models.CharField(max_length=20, default=None, blank=False, null=False)
     section = models.CharField(choices=section_choices, max_length=50, default='New Arrivals', blank=True, null=True)
     category = models.CharField(choices=category_choices, max_length=50, default=None, blank=False, null=False)
-    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='vendor', default=None, blank=True, null=True)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='products', default=None, blank=True, null=True)
     
 
     created_at = models.DateTimeField(auto_now_add=True)
