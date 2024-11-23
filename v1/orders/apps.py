@@ -6,4 +6,4 @@ class OrdersConfig(AppConfig):
     name = 'orders'
 
     def ready(self):
-        import services.signals.initialize_payment
+        import services.signals.payment.initialize_payment
