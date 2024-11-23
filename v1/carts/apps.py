@@ -6,4 +6,4 @@ class CartsConfig(AppConfig):
     name = 'carts'
 
     def ready(self):
-        import services.signals.customer_session_id
+        import services.signals.customer.customer_session_id
