@@ -20,9 +20,8 @@ class Vendor(models.Model):
     address = models.CharField(max_length=225, default=None, blank=False, null=False)
     email = models.EmailField(max_length=50, default=None, blank=False, null=False, unique=True)
     phone = PhoneNumberField(_("Phone Number"), unique=True)
-    total_products = models.CharField(max_length=None, default=None, null=True, blank=True)
-    
-
+    total_products = models.CharField(max_length=100, default=None, null=True, blank=True)
+    choice = models.CharField(choices=currency, max_length=3, default="NGN")
     created_at = models.DateTimeField(auto_now_add=True)
 
 
