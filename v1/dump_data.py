@@ -116,11 +116,9 @@
 #     },
 #     # ... Repeat similar structures for other categories and products
 # ]
-
 # # You can generate more products programmatically if needed.
 # # For example:
 # import random
-
 # def generate_random_products():
 #     brands = ["BrandA", "BrandB", "BrandC", "BrandD"]
 #     categories = ["Electronics", "Fashion", "Home Appliances", "Outdoor", "Gaming"]
@@ -137,10 +135,8 @@
 #             brand=random.choice(brands),
 #             quantity=random.randint(10, 200),
 #             section=random.choice(sections),
-#             category=random.choice(categories),
-            
+#             category=random.choice(categories),          
 #         )
 #     print('Successfully added')
 #     return products
-
-# # Add random products to the list
+# # Add random products to the lisT
