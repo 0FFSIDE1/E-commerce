@@ -7,3 +7,4 @@ class OrdersConfig(AppConfig):
 
     def ready(self):
         import services.signals.payment.initialize_payment
+        from services.signals.order import order_total_price

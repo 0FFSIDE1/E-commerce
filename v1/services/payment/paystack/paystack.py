@@ -16,10 +16,11 @@ def initialize_payment(order):
     data = {
         "email": order.customer.email,
         "amount": int(order.total_price * 100),  # Convert to kobo
-        "reference": order.order_id,
+        "reference": order.status,
     }
     url = "https://api.paystack.co/transaction/initialize"
     response = requests.post(
         url, json=data, headers=headers
     )
+    print(response.json())
     return response.json()

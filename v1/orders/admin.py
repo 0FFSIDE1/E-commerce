@@ -4,6 +4,7 @@ from .models import Order, OrderItem
 # Register your models here.
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
+    extra = 0
 
 class OrderAdmin(admin.ModelAdmin):
     inlines = [

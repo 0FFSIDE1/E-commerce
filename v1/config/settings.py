@@ -131,6 +131,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'ATOMIC_REQUESTS': True,
+        'OPTIONS': {
+            'timeout': 20,  # Time in seconds
+        },
     }
 }
 
@@ -191,6 +195,10 @@ CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Adjust for your Redis setup
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Adjust for your Redis setup
+CELERY_TRACK_STARTED = True
+CELERY_SEND_EVENTS = True
+
+
 
 # paystack
 PAYSTACK_SECRET_KEY= os.environ.get('PAYSTACK_SECRET_KEY')
@@ -199,3 +207,12 @@ PAYSTACK_PUBLIC_KEY= os.environ.get('PAYSTACK_PUBLIC_KEY')
 # phone number
 PHONENUMBER_DEFAULT_REGION = "NG"
 PHONENUMBER_DB_FORMAT = "NATIONAL" 
+
+#Email config
+EMAIL_BACKEND=os.environ.get('EMAIL_BACKEND')
+EMAIL_HOST=os.environ.get('EMAIL_HOST')
+EMAIL_USE_TLS=os.environ.get('EMAIL_USE_TLS')
+EMAIL_PORT=os.environ.get('EMAIL_PORT')
+EMAIL_HOST_USER=os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD=os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL=os.environ.get('DEFAULT_FROM_EMAIL')

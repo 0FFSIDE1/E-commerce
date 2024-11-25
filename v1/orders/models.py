@@ -1,29 +1,32 @@
 from django.db import models
 from customers.models import Customer
-from carts.models import Cart
+from carts.models import Cart, CartItem
 import uuid
 from products.models import Product
 # Create your models here.
 class Order(models.Model):
     order_id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, default=None)
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, default=None, related_name='cart', blank=False, null=False)
+    cart = models.OneToOneField(Cart, on_delete=models.CASCADE, default=None, related_name='cart', help_text="The cart used for this order")
     choices = (('Created','Created'), ('Pending','Pending'), ('Shipped', 'Shipped'), ('Delivered', 'Delivered'), ('Canceled', 'Canceled'))
     status = models.CharField(choices=choices, default='Created', max_length=15)
-    total_price = models.CharField(max_length=20, default=None, blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def total_amount(self):
+        # Calculate total amount from all items in the cart
+        return self.cart.items.aggregate(total=models.Sum('total_price'))['total'] or 0
+
     def __str__(self):
-        return self.customer.first_name
+        return f"{self.customer.first_name} "
+    
+    
+
+
     
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order,on_delete=models.CASCADE,related_name='items')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
+    order = models.ForeignKey(Order,on_delete=models.CASCADE,related_name='items', help_text="The order this item belongs to")
+    cartitems = models.ForeignKey(CartItem, on_delete=models.CASCADE, related_name='items', help_text="The cart item associated with this order item")
 
-    @property
-    def item_subtotal(self):
-        return self.product.price * self.quantity
-    
+  
     def __str__(self):
-        return f"{self.quantity} x {self.product.name} in Order {self.order.order_id}"
+        return f"{self.cartitems.product.name} in Order {self.order.order_id}"

@@ -7,5 +7,6 @@ from services.payment.paystack.paystack import initialize_payment
 @receiver(post_save, sender=Order)
 def initialize_payment_signal(sender, instance, created, **kwargs):
     if created:
-        initialize_payment(order=instance)
+        # initialize_payment(order=instance)
+        pass
         

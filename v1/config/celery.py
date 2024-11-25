@@ -6,7 +6,13 @@ from celery import Celery
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
 app = Celery('config')
-
+# Celery configuration
+app.conf.update(
+    broker_url='redis://localhost:6379/0',
+    result_backend='redis://localhost:6379/1',
+    broker_connection_retry=True,  # Retry broker connections during runtime
+    broker_connection_retry_on_startup=True,  # Retry broker connections during startup
+)
 # Using a string here means the worker doesn’t have to serialize
 # the configuration object to child processes.
 app.config_from_object('django.conf:settings', namespace='CELERY')
