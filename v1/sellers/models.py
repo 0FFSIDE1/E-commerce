@@ -21,6 +21,8 @@ class Vendor(models.Model):
     email = models.EmailField(max_length=50, default=None, blank=False, null=False, unique=True)
     phone = PhoneNumberField(_("Phone Number"), unique=True)
     total_products = models.CharField(max_length=100, default=0, null=True, blank=True)
+    total_orders = models.PositiveIntegerField(default=0)
+    total_orders_delivered = models.PositiveIntegerField(default=0)
 
 
     currency = models.CharField(choices=currency, default="NGN", max_length=3)
