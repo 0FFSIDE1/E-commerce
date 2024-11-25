@@ -11,5 +11,5 @@ def set_session_id(sender, instance, created, **kwargs):
             request.session.create()
               
         session_id = request.session.session_key
-        instance.session_id = session_id
+        instance.Session = session_id
         instance.save()
