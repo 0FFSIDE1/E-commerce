@@ -6,4 +6,4 @@ class ProductsConfig(AppConfig):
     name = 'products'
 
     def ready(self):
-        import services.signals.sellers
+        from services.signals.sellers.vendor_total_product import update_total_products_on_create, update_total_products_on_delete
