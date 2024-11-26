@@ -1,41 +1,42 @@
 from carts.models import Cart
 from products.models import Product
 from rest_framework.exceptions import NotFound
-from uuid import uuid4
-from django.contrib.sessions.models import Session
-from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
-def get_or_create_cart(request=None, customer=None, session_id=None):
-    if not any([request, customer, session_id]):
-        raise ValueError("Either request, customer, or session_id must be provided.")
+async def get_cart(request=None, customer=None):
+    """
+    Retrieve or create a cart for a customer or an anonymous user.
 
-    if customer:
-        # Retrieve or create a cart for a specific user
-        cart, created = Cart.objects.get_or_create(user=customer)
-    elif request and request.user.is_authenticated:
-        # Use authenticated user from request
-        cart, created = Cart.objects.get_or_create(user=request.user)
-    elif session_id:
-        # Retrieve or create an anonymous cart using session ID
-        cart, created = Cart.objects.get_or_create(session_id=session_id)
-    elif request:
-        # Fallback to anonymous cart stored in session
-        cart_id = request.session.get('cart_id', None)
-        if cart_id:
-            cart = Cart.objects.get(id=cart_id)
-        else:
-            cart = Cart.objects.create()
-            request.session['cart_id'] = cart.id
-    else:
-        raise ValueError("Insufficient data to create or retrieve cart.")
+    Args:
+        request: The HTTP request object (used for anonymous users).
+        customer: A Customer object (used for logged-in users).
 
-    return cart
+    Returns:
+        Cart object for the specified customer or session.
 
+    Raises:
+        ValueError: If neither request nor customer is provided.
+    """
+    if not (request or customer):
+        raise ValueError("Either 'request' or 'customer' must be provided to retrieve or create a cart.")
 
-
-
-def get_product_or_404(product_id):
     try:
-        return Product.objects.get(item_id=product_id)
+        if customer:
+            # Retrieve or create a cart for a specific customer
+            cart, created = Cart.objects.get(customer=customer)
+        elif request:
+            # Retrieve or create a cart for a anonymous user, session_id is being controlled by signal
+            cart = Cart.objects.get_or_create()
+        return cart
+
+    except ObjectDoesNotExist:
+        raise ValueError("Unable to retrieve or create a cart.")
+
+
+
+
+async def get_product_or_404(name):
+    try:
+        return Product.objects.get(name=name)
     except Product.DoesNotExist:
         raise NotFound({"error": "Product not found."})

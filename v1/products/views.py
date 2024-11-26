@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from .models import Product
 from rest_framework import status
 from services.serializers.product import ProductSerializer
-from services.utils.product import *
-from services.utils.error import Error_Response
+from services.utils.response.product import *
+from services.utils.response.error import Error_Response
 from django.http import Http404
 
 # Create your views here.

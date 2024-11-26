@@ -5,9 +5,9 @@ from rest_framework.response import Response
 from .models import Notification
 from rest_framework import status
 from services.serializers.notification import NotificationSerializer
-from services.utils.error import Error_Response
+from services.utils.response.error import Error_Response
 from django.http import Http404
-from services.utils.notification import *
+from services.utils.response.notification import *
 
 # Create your views here.
 class Notifications_view(generics.CreateAPIView):

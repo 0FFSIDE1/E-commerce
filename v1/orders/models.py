@@ -7,7 +7,7 @@ from django.db.models import Sum
 class Order(models.Model):
     order_id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, default=None)
-    cart = models.OneToOneField(Cart, on_delete=models.CASCADE, default=None, related_name='cart', help_text="The cart used for this order")
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, default=None, related_name='cart', help_text="The cart used for this order")
     choices = (('Created','Created'), ('Pending','Pending'), ('Shipped', 'Shipped'), ('Delivered', 'Delivered'), ('Canceled', 'Canceled'))
     status = models.CharField(choices=choices, default='Created', max_length=15)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, help_text="The total amount for the order")

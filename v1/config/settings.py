@@ -100,7 +100,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # custom middleware (check 'services/middleware')
-    'services.middleware.middleware.RequestMiddleware'
+    'services.middleware.middleware.CurrentRequestMiddleware'
 ]
 
 ROOT_URLCONF = 'config.urls'

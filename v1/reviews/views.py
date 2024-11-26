@@ -5,11 +5,11 @@ from rest_framework.response import Response
 from .models import Review
 from rest_framework import status
 from services.serializers.review import ReviewSerializer
-from services.utils.error import Error_Response
+from services.utils.response.error import Error_Response
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from products.models import Product
-from services.utils.review import *
+from services.utils.response.review import *
 
 # Create your views here.
 class Reviews_view(generics.ListCreateAPIView):
