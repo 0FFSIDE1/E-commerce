@@ -14,7 +14,7 @@ def send_email(sender, instance, created, **kwargs):
             
             # Prepare the email content
             subject = "Welcome to Our Platform!"
-            message = f"Hi {user.first_name},\n\nThank you for creating a profile with us! We're thrilled to have you on board."
+            message = f"Hi {user.name},\n\nThank you for creating a profile with us! We're thrilled to have you on board."
             from_email = "ezexavier103@gmail.com"
             recipient_list = [user.email]
             

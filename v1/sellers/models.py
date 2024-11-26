@@ -21,7 +21,7 @@ class Vendor(models.Model):
     email = models.EmailField(max_length=50, default=None, blank=False, null=False, unique=True)
     phone = PhoneNumberField(_("Phone Number"), unique=True)
     total_products = models.CharField(max_length=100, default=None, null=True, blank=True)
-    choice = models.CharField(choices=currency, max_length=3, default="NGN")
+    currency = models.CharField(choices=currency, default="NGN", max_length=3)
     created_at = models.DateTimeField(auto_now_add=True)
 
 

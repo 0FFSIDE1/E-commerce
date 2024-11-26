@@ -6,4 +6,4 @@ class CustomersConfig(AppConfig):
     name = 'customers'
 
     def ready(self):
-        import services.signals.get_customer_ip
+        from services.signals.customer import get_customer_ip
