@@ -5,7 +5,7 @@ import AuthProvider from "./routes/AuthContext";
 function App() {
   return (
     <AuthProvider>  {/* app with AuthProvider */}
-      <RouterProvider router={routes}/>
+      <RouterProvider router={routes} future={{ v7_startTransition: true }}/>
     </AuthProvider>
   );
 }

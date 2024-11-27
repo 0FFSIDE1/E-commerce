@@ -1,11 +1,10 @@
-import { useEffect } from "react";
 import { createContext, useEffect, useState } from "react";
 import React from 'react'
 
 // creating the AuthContext
 export const AuthContext = createContext()
 
-function AuthContext({children}) {
+function AuthProvider({children}) {
     const [currentUser, setCurrentUSer] = useState(null)
 
     // Checking if the token is present
@@ -30,4 +29,4 @@ function AuthContext({children}) {
   )
 }
 
-export default AuthContext
+export default AuthProvider
