@@ -9,6 +9,15 @@ class CartSerializer(serializers.ModelSerializer):
         model = Cart
         fields = "__all__"
 
+    def validate(self, data):
+        session = data.get('session', None)
+        if session:
+            # Check if a cart with the same session already exists
+            existing_cart = Cart.objects.filter(session=session).exclude(pk=self.instance.pk if self.instance else None).first()
+            if existing_cart:
+                raise serializers.ValidationError({"session": "A cart with this session ID already exists."})
+        return data
+
 
 class CartItemSerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(
@@ -34,4 +43,4 @@ class CartItemSerializer(serializers.ModelSerializer):
         """
         if obj.cart.customer:
             return obj.cart.customer.username
-        return obj.cart.session_id
+        return obj.cart.session

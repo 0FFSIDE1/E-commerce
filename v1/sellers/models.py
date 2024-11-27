@@ -23,10 +23,14 @@ class Vendor(models.Model):
     total_products = models.CharField(max_length=100, default=0, null=True, blank=True)
     total_orders = models.PositiveIntegerField(default=0)
     total_orders_delivered = models.PositiveIntegerField(default=0)
+    total_customers = models.PositiveIntegerField(default=0)
+    total_reviews = models.PositiveIntegerField(default=0)
 
 
     currency = models.CharField(choices=currency, default="NGN", max_length=3)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    updated_at = models.DateTimeField(auto_now=True)
 
 
     def __str__(self):

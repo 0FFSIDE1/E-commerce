@@ -7,4 +7,5 @@ class OrdersConfig(AppConfig):
 
     def ready(self):
         import services.signals.payment.initialize_payment
-        from services.signals.sellers.total_order import update_vendor_total_orders, update_delivered_orders_for_vendor
+        from services.signals.order.total_order import update_vendor_total_orders, update_delivered_orders_for_vendor
+        from services.signals.product.update_product_quantity import update_product_quantity

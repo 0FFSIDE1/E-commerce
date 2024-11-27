@@ -2,6 +2,9 @@ from carts.models import Cart
 from products.models import Product
 from rest_framework.exceptions import NotFound
 from django.core.exceptions import ObjectDoesNotExist
+from customers.models import Customer
+from django.db import transaction
+from orders.models import Order
 
 async def get_cart(request=None, customer=None):
     """
@@ -40,3 +43,33 @@ async def get_product_or_404(name):
         return Product.objects.get(name=name)
     except Product.DoesNotExist:
         raise NotFound({"error": "Product not found."})
+    
+
+async def create_order_from_cart(request):
+    try:
+       
+        customer = Customer.objects.get(user=request.user)
+        cart = await get_cart(request=request, customer=customer)
+        cart_items = cart.items.select_related('product')
+        if not cart_items.exists():
+            raise ValueError("Cart is Empty")
+        # Create order and delete cart items (or mark as processed)
+        with transaction.atomic():
+            order = Order.objects.create(
+                cart=cart,
+                customer=customer,
+            )
+            
+        return order  
+    except Exception as e:
+        raise ValueError(f"Unable to perform action.{e}")
+        
+       
+           
+      
+
+
+async def clear_cart(cart):
+    """Clear a cart"""
+    data = cart.items.all().delete()
+    return data

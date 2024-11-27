@@ -15,31 +15,23 @@ class Cart(models.Model):
     def __str__(self):
         return f"Cart for: {self.customer.first_name} |  {self.customer.email}" if self.customer else f"Cart for session id: {self.session}"
     
-    def clean(self):
-        """
-        Ensure the session field is unique if it is not null or blank.
-        """
-        if self.session:
-            # Check if a cart with the same session already exists
-            existing_cart = Cart.objects.filter(session=self.session).exclude(pk=self.pk).first()
-            if existing_cart:
-                raise ValidationError({"session": "A cart with this session ID already exists."})
-
-    def save(self, *args, **kwargs):
-        """
-        Override save to run clean before saving the object.
-        """
-        self.clean()  # Call the clean method for validation
-        super().save(*args, **kwargs)
-
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="items", help_text="The cart this item belongs to")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="cart_items")
     quantity = models.PositiveIntegerField(default=1)
-    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, blank=True, null=True)
+    total_price = models.FloatField(default=0.00, blank=True, null=True)
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),        # Default state
+        ('Paid', 'Paid'),  
+        ('Shipped', 'Shipped'),        # Item shipped by vendor
+        ('Delivered', 'Delivered'),    # Item delivered to customer
+        ('Canceled', 'Canceled'),      # Item order canceled
+    ]
+
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='Pending')
 
 
 
     def __str__(self):
-        return f"Cart Owner {self.cart.customer if self.cart.customer else f"Cart({self.cart.session_id})"} ordered {self.product.name}: {self.quantity}"
+        return f"Cart Owner {self.cart.customer if self.cart.customer else f"Cart({self.cart.session})"} ordered {self.product.name}: {self.quantity}"

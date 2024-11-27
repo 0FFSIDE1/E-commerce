@@ -29,3 +29,5 @@ def update_delivered_orders_for_vendor(sender, instance, **kwargs):
                 status='Delivered'
             ).distinct().count()
             vendor.save()
+
+
