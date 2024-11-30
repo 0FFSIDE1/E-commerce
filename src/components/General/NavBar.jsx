@@ -6,7 +6,7 @@ function NavBar() {
   const navigate = useNavigate();
 
   return (
-    <nav className="bg-gradient-to-r from-[#f9f8fb] to-[#f4d7e3] hover:from-[#EAE7F3] hover:to-[#D6D1E8] transition-all duration-700 ease-in-out text-gray-800 shadow-md flex flex-col sm:flex-row items-center justify-between py-4 px-6">
+    <nav className=" sticky ring-black bg-gradient-to-r from-[#efe2e5] to-[#f38cb7]  transition-all duration-700 ease-in-out text-gray-800 shadow-md flex flex-col sm:flex-row items-center justify-between py-4 px-6">
       {/* Logo */}
       <div
         className="font-extrabold text-2xl sm:text-3xl cursor-pointer hover:text-gray-600 text-red-700"
@@ -25,7 +25,7 @@ function NavBar() {
         </button>
         <button
           onClick={() => navigate("#")}
-          className=" basis-1/2 px-4 py-2 text-white font-bold rounded-lg shadow-lg transition duration-300 ring ring-red-700"
+          className=" basis-1/2 px-4 py-2 text-red-700 font-bold rounded-lg shadow-lg transition duration-300 ring-2 ring-red-700"
         >
           Vendors
         </button>
@@ -36,7 +36,7 @@ function NavBar() {
         <input
           type="text"
           placeholder="Search Products..."
-          className="w-full sm:w-10/12 lg:w-3/5 p-3 rounded-full border-none shadow-md outline-none text-gray-800 focus:ring-2 focus:ring-purple-400"
+          className="w-full sm:w-10/12 lg:w-3/5 p-3 rounded-full border-none shadow-md outline-none text-gray-800 focus:ring-2 focus:ring-red-700"
         />
       </div>
 
