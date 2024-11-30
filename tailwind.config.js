@@ -8,6 +8,7 @@ export default {
         },
         fontFamily:{
             sans: ["Montserrat", "sans-serif"],
+            calligraphic: ['Great Vibes', 'cursive'],
         },
       },
     },
