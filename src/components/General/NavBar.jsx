@@ -9,7 +9,7 @@ function NavBar() {
     <nav className="bg-gradient-to-r from-[#f9f8fb] to-[#f4d7e3] hover:from-[#EAE7F3] hover:to-[#D6D1E8] transition-all duration-700 ease-in-out text-gray-800 shadow-md flex flex-col sm:flex-row items-center justify-between py-4 px-6">
       {/* Logo */}
       <div
-        className="font-extrabold text-2xl sm:text-3xl cursor-pointer hover:text-gray-600"
+        className="font-extrabold text-2xl sm:text-3xl cursor-pointer hover:text-gray-600 text-red-700"
         onClick={() => navigate("/")}
       >
         AlabaLine
@@ -19,13 +19,13 @@ function NavBar() {
       <div className="px-4 mt-4 sm:mt-0 flex flex-row sm:flex-row gap-4 sm:gap-6 items-center">
         <button
           onClick={() => navigate("#")}
-          className="px-4 py-2 text-black font-bold rounded-lg shadow-lg transition duration-300"
+          className="px-4 py-2 font-bold rounded-lg shadow-lg text-white transition duration-300 bg-red-700 ring ring-red-700"
         >
           Collections
         </button>
         <button
           onClick={() => navigate("#")}
-          className=" basis-1/2 px-4 py-2 text-black font-bold rounded-lg shadow-lg transition duration-300"
+          className=" basis-1/2 px-4 py-2 text-white font-bold rounded-lg shadow-lg transition duration-300 ring ring-red-700"
         >
           Vendors
         </button>
