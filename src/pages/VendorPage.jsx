@@ -79,7 +79,7 @@ function VendorPage () {
 
   return (
     <PageContainer showFooter={true} showNav={true}>
-        <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
+        <div className="p-6 bg-gradient-to-br from-slate-300 via-red-300 to-red-700 min-h-screen flex items-center justify-center">
         <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-3xl">
             <h1 className="text-2xl font-bold text-gray-800 mb-6">
             VENDORS

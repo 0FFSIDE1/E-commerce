@@ -18,13 +18,13 @@ function NavBar() {
       {/* Collections and Add Vendors */}
       <div className="px-4 mt-4 sm:mt-0 flex flex-row sm:flex-row gap-4 sm:gap-6 items-center">
         <button
-          onClick={() => navigate("#")}
+          onClick={() => navigate("product/")}
           className="px-4 py-2 font-bold rounded-lg shadow-lg text-white transition duration-300 bg-red-700 ring ring-red-700"
         >
           Collections
         </button>
         <button
-          onClick={() => navigate("#")}
+          onClick={() => navigate("vendor/")}
           className=" basis-1/2 px-4 py-2 text-red-700 font-bold rounded-lg shadow-lg transition duration-300 ring-2 ring-red-700"
         >
           Vendors
