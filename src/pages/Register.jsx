@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import PageContainer from "../components/General/PageContainer";
+import "../components/landing/Style_hero.css"
 
 function Register() {
   const fadeInVariant = {
@@ -9,8 +10,8 @@ function Register() {
   };
 
   return (
-    <PageContainer showFooter={true} showNav={false}>
-        <div className="flex flex-col md:flex-row items-center justify-center min-h-screen bg-gradient-to-r  from-white/50 to-[#f6b4cf] p-6 relative overflow-hidden">
+    <PageContainer showFooter={true} showNav={true}>
+        <div className="flex flex-col md:flex-row items-center justify-center min-h-screen bg-gradient-to-r  from-white/50 to-[#f6b4cf] p-6 relative overflow-hidden animate-gradient">
         {/* Floating Background Elements */}
         <div className="absolute top-10 left-10 w-40 h-40 bg-white opacity-10 rounded-full blur-2xl"></div>
         <div className="absolute bottom-10 right-10 w-60 h-60 bg-purple-500 opacity-20 rounded-full blur-3xl"></div>

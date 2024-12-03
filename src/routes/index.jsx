@@ -3,7 +3,9 @@ import Landing from "../pages/Landing"
 import Register from "../pages/Register"
 import Productpage from "../pages/Productpage"
 import VendorPage from "../pages/VendorPage"
+import Cart from "../pages/Cart"
 import ProtectiveRoute from "./ProtectiveRoute"
+
 
 const routes = createBrowserRouter([
     {
@@ -22,6 +24,10 @@ const routes = createBrowserRouter([
     {
         path:"/vendor",
         element:<VendorPage/>
+    },
+    {
+        path:"/cart",
+        element:<Cart/>
     },
 
 ])

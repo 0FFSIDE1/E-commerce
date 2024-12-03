@@ -9,7 +9,7 @@ function NavBar() {
     <nav className=" sticky ring-black bg-gradient-to-r from-[#efe2e5] to-[#f38cb7]  transition-all duration-700 ease-in-out text-gray-800 shadow-md flex flex-col sm:flex-row items-center justify-between py-4 px-6">
       {/* Logo */}
       <div
-        className="font-extrabold text-2xl sm:text-3xl cursor-pointer hover:text-gray-600 text-red-700"
+        className="font-extrabold text-2xl sm:text-3xl cursor-pointer hover:text-gray-600 text-red-900"
         onClick={() => navigate("/")}
       >
         AlabaLine
@@ -18,13 +18,13 @@ function NavBar() {
       {/* Collections and Add Vendors */}
       <div className="px-4 mt-4 sm:mt-0 flex flex-row sm:flex-row gap-4 sm:gap-6 items-center">
         <button
-          onClick={() => navigate("product/")}
+          onClick={() => navigate("/product")}
           className="px-4 py-2 font-bold rounded-lg shadow-lg text-white transition duration-300 bg-red-700 ring ring-red-700"
         >
           Collections
         </button>
         <button
-          onClick={() => navigate("vendor/")}
+          onClick={() => navigate("/vendor")}
           className=" basis-1/2 px-4 py-2 text-red-700 font-bold rounded-lg shadow-lg transition duration-300 ring-2 ring-red-700"
         >
           Vendors
@@ -45,10 +45,12 @@ function NavBar() {
         <FaShoppingCart
           className="text-2xl cursor-pointer hover:scale-110 transition-transform duration-300"
           title="Cart"
+          onClick={()=> navigate("/cart")}
         />
         <FaUserCircle
           className="text-2xl cursor-pointer hover:scale-110 transition-transform duration-300"
           title="Profile"
+          onClick={()=> navigate("/register")}
         />
       </div>
     </nav>
