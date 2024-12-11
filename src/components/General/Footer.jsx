@@ -1,9 +1,38 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 function Footer() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+
+    // Set canvas dimensions
+    canvas.width = window.innerWidth;
+    canvas.height = 150; // Adjust the height as needed
+
+    // Draw the wave shape
+    ctx.fillStyle = "#1F2937"; // Background color of the wave
+    ctx.beginPath();
+    ctx.moveTo(0, 100); // Start at the bottom left
+    ctx.quadraticCurveTo(canvas.width / 2, -50, canvas.width, 100); // Create wave
+    ctx.lineTo(canvas.width, canvas.height); // Bottom-right corner
+    ctx.lineTo(0, canvas.height); // Bottom-left corner
+    ctx.closePath();
+    ctx.fill();
+  }, []);
+
   return (
-    <footer className="bg-gray-900 text-white py-8">
-      <div className="container mx-auto px-4">
+    <div className="relative bg-gray-800 text-white">
+      {/* Canvas for the wavy background */}
+      <canvas
+        ref={canvasRef}
+        className="absolute top-0 left-0 w-full h-full"
+        style={{ zIndex: -1 }}
+      ></canvas>
+
+      {/* Footer Content */}
+      <div className="container mx-auto px-4 py-8">
         {/* Newsletter Section */}
         <div className="text-center md:flex md:justify-between md:items-center mb-8">
           <h3 className="text-lg font-semibold mb-4 md:mb-0">
@@ -15,7 +44,7 @@ function Footer() {
               placeholder="Input your email"
               className="px-4 py-2 rounded-l-lg text-gray-900 focus:outline-none"
             />
-            <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-r-lg transition-all">
+            <button className="bg-red-700 hover:bg-red-600 text-white py-2 px-4 rounded-r-lg transition-all">
               Subscribe
             </button>
           </div>
@@ -77,7 +106,7 @@ function Footer() {
           </a>
         </div>
       </div>
-    </footer>
+    </div>
   );
 }
 
