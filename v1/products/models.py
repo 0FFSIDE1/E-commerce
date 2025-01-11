@@ -4,14 +4,14 @@ from sellers.models import Vendor
 
 # Create your models here.
 class Product(models.Model):
-    section_choices = (
+    product_category = (
         ('New Arrivals', 'New Arrivals'), 
         ('Black Friday', 'Black Friday'), 
         ('Flashsales', 'Flashsales'), 
         ('Special Offers', 'Special Offers'), 
         ('Sponsored products', 'Sponsored products'), 
         ('Deals of the day', 'Deals of the day'))
-    category_choices = (
+    product_type = (
         ('Appliances', 'Appliances'),
         ('Outdoor & Sports', 'Outdoor & Sports'),
         ('Electrical and Electronics', 'Electrical and Electronics'),
@@ -42,22 +42,21 @@ class Product(models.Model):
         ('Kids accessories', 'Kids accessories'),
         )
 
-    item_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name =  models.CharField(max_length=125, default=None, blank=False, null=False)
+    item_id = models.UUIDField(max_length=7, primary_key=True, default=uuid.uuid4)
+    name =  models.CharField(max_length=125, default=None, blank=False, null=False, unique=True)
     description = models.TextField(max_length=None, default=None, blank=True, null=True)
-    price = models.CharField(max_length=25, default=None, blank=False, null=False)
-    previous_price = models.CharField(max_length=25, default=None, blank=True, null=True)
-    product_type = models.CharField(max_length=20, default=None, blank=False, null=False)
-    brand = models.CharField(max_length=20, default=None)
-    in_stock = models.BooleanField(default=True)
-    quantity = models.CharField(max_length=20, default=None, blank=False, null=False)
-    section = models.CharField(choices=section_choices, max_length=50, default='New Arrivals', blank=True, null=True)
-    category = models.CharField(choices=category_choices, max_length=50, default=None, blank=False, null=False)
-    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='products', default=None, blank=True, null=True)
-    
+    price =  models.PositiveIntegerField(default=0, blank=False, null=False)
+    quantity = models.PositiveIntegerField(default=1, blank=False, null=False)
+    category = models.CharField(choices=product_category, max_length=50, default=None, blank=False, null=False)
+    product_type = models.CharField(choices=product_type, max_length=50, default=None, blank=False)
+    photo_1 =  models.URLField(default=None, blank=True, null=True,) 
+    photo_2 =  models.URLField(default=None, blank=True, null=True,) 
+    available_sizes = models.JSONField(default=list, null=True, blank=True)
+    available_colors = models.JSONField(default=list, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.item_id}| {self.name} | {self.category} | {self.product_type}"
+    
     

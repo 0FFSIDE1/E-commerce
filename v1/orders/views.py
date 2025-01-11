@@ -1,112 +1,108 @@
-# from rest_framework import generics, permissions
-# from rest_framework.response import Response
-# from services.serializers.order import OrderSerializer
-# from .models import Order
-# from rest_framework.permissions import IsAuthenticated, AllowAny
-# from customers.models import Customer
-# from services.utils.order import *
-# from django.http import Http404
-# from rest_framework.exceptions import NotFound
-# from rest_framework import status
+from django.http import JsonResponse
+from django.shortcuts import redirect, render
+from carts.models import Cart
+from customers.models import Customer
+from orders.models import Order
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
+from app.tasks import admin_send_email
+from services.utils.cart import clear_cart
+from services.utils.user import add_user_to_cart, staff_required
+from services.emails.utils.context import context
+
+# Create your views here.
+import logging
+logger = logging.getLogger(__name__)
+
+@login_required
+@user_passes_test(staff_required,  login_url='login', redirect_field_name='login')
+def UpdateOrderView(request, pk):
+    if request.method == 'POST':
+        status = request.POST.get('status', None)
+        if status is None:
+            messages.error(request, 'Status cannot be None, Provide Order status!')
+            return redirect('order-detail', pk)
+        else:
+            
+        
+            try:
+                order = Order.objects.get(order_id=pk)
+                print(order)
+                order.status = status
+                context_data = context(order=order)
+                if status == 'Pending':
+                    result = admin_send_email.delay(context=context_data, to_email=order.customer.email, subject=f'Order Processing: # {order.order_id}', body='emails/order_pending.html')
+                    print(f'Task queued: {result}')
+            
+                if status == 'Paid':
+                    result = admin_send_email.delay(context=context_data, to_email=order.customer.email, subject=f'Payment Receipt #{order.order_id}', body='emails/payment_success.html')
+                    print(f'Task queued: {result}')
+            
+                if status == 'Shipped':
+                    result = admin_send_email.delay(context=context_data, to_email=order.customer.email, subject=f'Order {status}: #{order.order_id}', body='emails/order_shipped.html')
+                    print(f'Task queued: {result}')
+                
+                if status == 'Delivered':
+                    result = admin_send_email.delay(context=context_data, to_email=order.customer.email, subject=f'Order {status}: #{order.order_id}', body='emails/order_delivered.html')
+                    print(f'Task queued: {result}')
+                
+                if status == 'Cancelled':
+                    result = admin_send_email.delay(context=context_data, to_email=order.customer.email, subject=f'Order {status}: #{order.order_id}', body='emails/order_cancelled.html')
+                    print(f'Task queued: {result}')
+                
+                order.save()
+
+                messages.success(request, 'Order updated successfully!')
+                return redirect('order-detail', pk)
+            
+            except Exception as e:
+                messages.error(request, f'Updated Failed! {str(e)}')
+                return redirect('order-detail', pk)
 
 
-# class Order_View(generics.ListAPIView):
+def CreateOrderView(request):
+    logger.debug('Received request: %s', request)
+    if request.method == 'POST':
+        try:
+            # Attempt to get customer and cart based on session key
+            logger.debug('Attempting to get customer and cart for session_key: %s', request.session.session_key)
+           
+            customer = Customer.objects.get(session=request.session.session_key)
+            logger.debug('Customer retrieved: %s', customer)
+            
+            cart = Cart.objects.get(session=customer.session)
+            logger.debug('Cart retrieved: %s', cart)
+           
 
-#     serializer_class = OrderSerializer
-
-#     def get_permissions(self):
-
-#         return [IsAuthenticated()]
-
-#     def get_queryset(self):
-     
-#         user = self.request.user
-
-#         # If admin, retrieve all orders
-#         if user.is_staff:
-#             queryset = Order.objects.all()
-#         else:
-#             # Regular users see only their own orders
-#             try:
-#                 customer = Customer.object.get(user=user)
-#                 queryset = Order.objects.filter(customer=customer)
-#             except Customer.DoesNotExist:
-#                 queryset = Order.objects.none()
-
+            # Create the order
+            order = Order.objects.create(customer=customer, cart=cart)
+            logger.debug('Order created: %s', order)
             
 
-#         # Apply status filter if provided
-#         status_filter = self.request.query_params.get('status', None)
-#         if status_filter:
-#             queryset = queryset.filter(status=status_filter)
+            # Generate invoice context
+            invoice = context(order=order)
+           
+            logger.debug('Generated invoice: %s', invoice)
 
-#         # Sort the orders 
-#         return queryset.order_by('-created_at')
+            try:
+                # Attempt to send the invoice email
+                result = admin_send_email.delay(context=invoice, to_email=customer.email, subject=f'Invoice for your order #{order.order_id}', body='emails/invoice.html')
+                logger.debug(f'Task queued for sending email: {result}')
+               
+                clear_cart(cart)
+                logger.debug('Cart cleared after order creation')
 
-#     def get(self, request, *args, **kwargs):
-#         queryset = self.get_queryset()
-#         serializer = self.get_serializer(queryset, many=True)
-#         return Response(
-#             get_orders_response(order=serializer.data,
-#                                 count = queryset.count(),
-#                                 status = status.HTTP_200_OK)
-#         )
-    
-#     def create(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(data = request.data)
-#         serializer.is_valid(raise_exception=True)
-#         self.perform_create(serializer)
-#         return Response(
-#              post_order_response(
-#                 order=serializer.data
-#             ), status = status.HTTP_201_CREATED
-#         )
+            except Exception as email_error:
+                logger.error(f'Error sending invoice email: {str(email_error)}')
+                
 
-# class Order_DetailView(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Order.objects.all()
-#     serializer_class = OrderSerializer
+            return JsonResponse({'success': True, 'order_id': order.order_id, 'amount': order.total_amount})
 
-#     def get_object(self):
-#         try:
-#             return super().get_object()
-#         except Http404:
-#             raise NotFound(detail="Order not found.", code=404)
-        
-#     def retrieve(self, request, *args, **kwargs):
-#         order = self.get_object()
-#         serializer = self.get_serializer(order)
-#         return Response(
-#             retrieve_order_response_data(
-#                 order=serializer.data
-#             ),
-#             status=status.HTTP_200_OK
-#         )
-    
-#     def update(self, request, *args, **kwargs):
-#         partial = kwargs.pop('partial', False)
-#         order = self.get_object()
-#         serializer = self.get_serializer(order, data=request.data, partial=partial)
-#         serializer.is_valid(raise_exception=True)
-#         self.perform_update(serializer)
-#         return Response(
-#             update_order_response_data(
-#                 order=serializer.data
-#             ),
-#             status=status.HTTP_200_OK
-#         )
-    
-#     def destroy(self, request, *args, **kwargs):
-#         order = self.get_object()
-#         self.perform_destroy(order)
-#         return Response(
-#             destroy_order_response_data(),
-#             status=status.HTTP_204_NO_CONTENT
-#         )
+        except Exception as e:
+            logger.error(f'Error processing order: {str(e)}')
+            
+            return JsonResponse({'success': False, 'message': str(e)}, status=400)
 
-
-# class OrderList_APIView(generics.ListAPIView):
-#     queryset = Order.objects.prefetch_related('items__product')
-#     serializer_class = OrderSerializer
-
-
-
+    else:
+        logger.warning('Invalid request method: %s', request.method)
+        return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)

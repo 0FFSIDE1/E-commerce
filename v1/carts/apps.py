@@ -5,7 +5,9 @@ class CartsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'carts'
 
+
     def ready(self):
-        from services.signals.cart.customer_session_id import set_session_id
-        import services.signals.cart.cartitem_total_price
+        from services.signals.cart import set_session_id
+        from services.signals.cartitem import calculate_total_price_of_cartitem, recalculate_total_price
+
 

@@ -1,112 +1,164 @@
-from django.shortcuts import render
-from rest_framework import generics 
-from rest_framework.exceptions import NotFound
-from rest_framework.response import Response
-from .models import Product
-from rest_framework import status
-from services.serializers.product import ProductSerializer
-from services.utils.response.product import *
-from services.utils.response.error import Error_Response
-from django.http import Http404
+from django.http import JsonResponse
+from django.shortcuts import redirect
+from services.utils.cloudinary import upload_image, get_image_urls
+from django.views import View
+import asyncio
+from products.models import Product
+from django.contrib import messages
+import logging
+from services.utils.product import create_product, get_product
+from django.views.decorators.csrf import csrf_exempt
+from asgiref.sync import sync_to_async
+from django.contrib.auth.decorators import login_required, user_passes_test
+from services.utils.user import staff_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseForbidden
+# Set up logging
+logger = logging.getLogger(__name__)
 
-# Create your views here.
-class Products_view(generics.ListCreateAPIView):
-        """
-        GET: Retrieves all Product record
-        POST: Add new Product record
-        queryset: All rows in Product Entity (total number of Products)
-        serializer_class: All columns in Product Entity
-        """
-        queryset = Product.objects.all()
-        serializer_class = ProductSerializer
-        
-        # GET
-        def list(self, request, *args, **kwargs):
-            queryset = self.get_queryset()
 
-            # Filter by query parameters
-            category = request.query_params.get('category')  # e.g., ?category=electronics
-            name = request.query_params.get('name')  # e.g., ?name=iphone
-            vendor = request.query_params.get('vendor') # e.g., ?vendor=vendor
-            section = request.query_params.get('section') # e.g., ?section=New arrivals
-            brand = request.query_params.get('brand')  # e.g., ?brand=nike
-            product_type = request.query_params.get('product_type')  # e.g., ?product_type=mobile phone
 
-            if category:
-                queryset = queryset.filter(category__icontains=category.capitalize())  # Case-insensitive filter
-            if name:
-                queryset = queryset.filter(name__icontains=name.capitalize())  
-            if vendor:
-                queryset = queryset.filter(vendor__icontains=vendor.capitalize()) 
-            if brand:
-               queryset = queryset.filter(brand__icontains=brand.capitalize())
-            if product_type:
-               queryset = queryset.filter(product_type__icontains=product_type.capitalize())
-            if section:
-                queryset = queryset.filter(section__icontains=section.capitalize())
-
-            serializer = self.get_serializer(queryset, many=True)
+@login_required
+@user_passes_test(staff_required,  login_url='login', redirect_field_name='login')
+async def AddProductView(request):
+    if request.method == "POST": 
+        try:
+            photo1 = request.FILES.get('photo1')
+            photo2 = request.FILES.get('photo2')
+            category = request.POST.get('category')
+            product_type = request.POST.get('product_type')
+            name = request.POST['name']
+            description = request.POST['description']
+            price = request.POST['price']
+            quantity = request.POST['quantity']
+            sizes = request.POST.getlist('available_sizes')
+            colors = request.POST.getlist('available_colors')
             
-            return Response(get_products_response(
-                queryset = queryset.count(), 
-                product = serializer.data),
-                status = status.HTTP_200_OK,
+            # Run the image uploads concurrently
+            result = await asyncio.gather(
+                upload_image(
+                    photo1, 
+                    f"Products/{category}/{product_type}"),
+
+                upload_image(
+                    photo2,
+                    f"Products/{category}/{product_type}"),
             )
 
-        # POST
-        def create(self, request, *args, **kwargs):
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            return Response(post_products_response(
-                product = serializer.data,     
-            ), status = status.HTTP_201_CREATED)
-        
+            # Extract the image URLs from the responses
+            photo_1_url = result[0]['secure_url']
+            photo_2_url = result[1]['secure_url']
+            
+            # Use the URLs to create the product
+            await create_product(
+                name=name, 
+                description=description,
+                quantity=quantity, 
+                price=price, 
+                photo_1=photo_1_url, 
+                photo_2=photo_2_url, 
+                category=category, 
+                product_type=product_type,
+                available_sizes=sizes,
+                available_colors=colors,
+                )
 
-class Product_detail(generics.RetrieveUpdateDestroyAPIView):
-    """
-       GET: Retrieves specific Product record
-       PUT and PATCH: update specific Product record
-       DELETE: delete specific Product record
-       queryset: all row in Product Entity
-       serializer_class: All columns in Product Entity
-    """
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    
-    def get_object(self):
+            # Log successful product creation
+            logger.info(f"Product '{name}' created successfully.")
+            messages.success(request, 'Product added to inventory successfully!')
+            return redirect('add-products')
+
+        except Exception as e:
+            # Log the exception for debugging purposes
+            logger.error(f"Error adding product: {str(e)}")
+            messages.error(request, f"An error occurred: {str(e)}")
+            return redirect('add-products')
+
+
+
+@login_required
+@user_passes_test(staff_required,  login_url='login', redirect_field_name='login')
+async def UpdateProductView(request, pk):
+    if request.method == 'POST':
         try:
-            return super().get_object()
-        except Http404:
-            raise NotFound(detail=Error_Response(error="ProductNotFound", message="Product"), code=404)
-       
-    # def check_permissions(self, request):
-    #     if not request.user.has_perm('Products.change_Product'):
-    #         raise PermissionDenied({"error": "You do not have permission to update this object."})
-    #     return super().check_permissions(request)
+            # Retrieve the product asynchronously
+            product = await get_product(pk=pk)
+            photo_1 = request.FILES.get('photo_1')
+            photo_2 = request.FILES.get('photo_2')
 
-    # GET
-    def retrieve(self, request, *args, **kwargs):
-        Product = self.get_object()
-        serializer = self.get_serializer(Product)
-        return Response(retrieve_product_response_data(
-            product = serializer.data,
-        ), status=status.HTTP_200_OK)
+            # Prepare the upload tasks
+            upload_tasks = []
 
-    # Update
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(update_product_response_data(
-            product = serializer.data,
-        ), status=status.HTTP_200_OK)
+            if photo_1:
+                upload_tasks.append(upload_image(
+                    photo_1,
+                    f"Products/{request.POST.get('category')}/{request.POST.get('product_type')}"
+                ))
+
+            if photo_2:
+                upload_tasks.append(upload_image(
+                    photo_2,
+                    f"Products/{request.POST.get('category')}/{request.POST.get('product_type')}"
+                ))
+
+            # Await the uploads concurrently
+            result = await asyncio.gather(*upload_tasks)
+
+            # Safely extract the image URLs from the responses
+            photo_1_url, photo_2_url =  await get_image_urls(result, photo_1, photo_2)
+
+            # Prepare the fields to update in the product
+            fields_to_update = {
+                'name': request.POST['name'],
+                'price': request.POST['price'],
+                'quantity': request.POST['quantity'],
+                'description': request.POST['description'],
+                'category': request.POST.get('category'),
+                'product_type': request.POST.get('product_type'),
+            }
+
+            if photo_2_url:
+                fields_to_update['photo_2'] = photo_2_url
+            if photo_1_url:
+                fields_to_update['photo_1'] = photo_1_url
+
+            sizes = request.POST.getlist('available_sizes')
+            colors = request.POST.getlist('available_colors')
+          
+            
+            if len(sizes) > 0:
+                fields_to_update['available_sizes'] = sizes
+            if len(colors) > 0:
+                fields_to_update['available_colors'] = colors
+
+            
+
+            # Update the product instance
+            for field, value in fields_to_update.items():
+                setattr(product, field, value)
+            # Save asynchronously
+            await sync_to_async(product.save)()
+  
+            messages.success(request, 'Product updated successfully!')
+            return redirect('product-detail', pk=product.item_id)
+           
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}")
+            return redirect('product-detail', pk=product.item_id)
     
-    # Delete
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(destroy_product_response_data(), 
-                        status=status.HTTP_204_NO_CONTENT)
+
+@login_required
+@user_passes_test(staff_required,  login_url='login', redirect_field_name='login')
+@csrf_exempt
+def DeleteProductView(request, pk):
+    if request.method == 'POST':
+        try:
+            product = Product.objects.get(item_id=pk)
+            product.delete()
+            messages.success(request, 'Product deleted successfully!')
+            return JsonResponse({'success': True}, safe=True)
+        except Exception as e:
+            messages.error(request, f'Product deletion Failed! {str(e)}')
+            return JsonResponse({'success': False}, safe=True)
+
+

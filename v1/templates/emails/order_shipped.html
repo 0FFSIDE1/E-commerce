@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Shipped: #{{ order_number }}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #2d3a3b;
+            text-align: center;
+        }
+        .table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        .table th, .table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        .table th {
+            background-color: #f1f1f1;
+            font-weight: bold;
+        }
+        .status {
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+            background-color: #c1e1c1;
+            color: #2d3a3b;
+            margin-top: 20px;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #000;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <img src="https://res.cloudinary.com/do9hxtnl7/image/upload/v1735981025/white-logo_urtuiu.png" alt="Company Logo">
+        </div>
+
+        <h2>Order Shipped: #{{ order_number }}</h2>
+
+        <p>Dear {{ customer_name }},</p>
+
+        <p>We are excited to inform you that your order has been shipped! Here are the details:</p>
+
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Item</th>
+                        <th>Size</th>
+                        <th>Color</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order_items %}
+                    <tr>
+                        <td>{{ item.product_name }}</td>
+                        <td>{{ item.size }}</td>
+                        <td>{{ item.color }}</td>
+                        <td>₦ {{ item.price }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>₦ {{ item.total }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="5" class="text-right fw-bold">Total:</td>
+                        <td>₦ {{ subtotal }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p><strong>Shipping Address:</strong> {{ shipped_to }}</p>
+        <p><strong>Expected Delivery Date:</strong> {{ estimated_delivery_date }}</p>
+
+        <div class="status">Your order is on its way!</div>
+
+        <div class="footer">
+            <p>Thank you for shopping with us!</p>
+            <p>If you have any questions, please contact us at <a href="mailto:customercare@cheeluxng.com">customercare@cheeluxng.com</a></p>
+            <p>Cheeluxng | 1-Brains and Hammers, Lifecamp Abuja | +2349137649324</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

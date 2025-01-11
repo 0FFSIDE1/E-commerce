@@ -15,8 +15,11 @@ class Customer(models.Model):
     first_name = models.CharField(max_length=25, default=None, blank=True)
     last_name = models.CharField(max_length=25, default=None, blank=True)
     email = models.EmailField(default=None, unique=True, null=False, blank=False)
-    phone = PhoneNumberField(_("Phone Number"), unique=True)
+    phone = PhoneNumberField(_("Phone Number"))
     address = models.CharField(max_length=100, default=None, blank=False, null=False)
+    city = models.CharField(max_length=50, default=None, blank=True, null=True)
+    country = models.CharField(max_length=50, default=None, blank=True, null=True)
+
     ip_address = models.GenericIPAddressField(_("ip address"), protocol="both", unpack_ipv4=False, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
