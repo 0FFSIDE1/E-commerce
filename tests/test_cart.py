@@ -10,7 +10,7 @@ class CartTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(username='testuser', password='testpassword')
-        self.product = Product.objects.create(name='Test Product', quantity=10, price=100, category='Men', product_type='Men sets')
+        self.product = Product.objects.create(name='Test Product', quantity=10, price=100, category='Men', product_type='Men sets', brand="Test_brand")
         self.customer = Customer.objects.create(user=self.user, first_name='Test', last_name='User', address='Test Address', phone='+254712345678', email='test_email@gmail.com')
         self.cart = Cart.objects.create(customer=self.customer)
         self.add_to_cart_url = reverse('add-to-cart', args=[self.product.pk])
