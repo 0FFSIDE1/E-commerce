@@ -21,12 +21,12 @@ local_settings.py
 db.sqlite3
 media/
 
-*migrations
-*migrations/
-migrations/
-.migrations/
-migrations/
-migrations
+# *migrations
+# *migrations/
+# migrations/
+# .migrations/
+# migrations/
+# migrations
 static
 static/
 *static/
