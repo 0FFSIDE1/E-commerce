@@ -61,6 +61,7 @@ async def AddProductView(request):
                 product_type=product_type,
                 available_sizes=sizes,
                 available_colors=colors,
+                # vendor=request.user,
                 )
 
             # Log successful product creation
