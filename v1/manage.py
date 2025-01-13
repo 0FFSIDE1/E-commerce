@@ -4,7 +4,6 @@ import os
 import sys
 import dotenv
 
-
 dotenv.load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
 def main():
@@ -23,3 +22,13 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # from dump_data import *
+    # generate_random_products()
+    # from services.payment.paystack.paystack import initialize_payment
+    # response = initialize_payment(
+    # email="customer@example.com",
+    # amount=1000,  # 1000 Naira
+    # callback_url="http://localhost:8000/payment/callback"
+    # )
+    # print(response)
+    

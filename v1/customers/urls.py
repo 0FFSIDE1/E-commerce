@@ -1,10 +1,9 @@
 from django.urls import path
 from .views import *
 
-
-
 urlpatterns = [
-   path('', Customers_view.as_view(), name='all-customers'),
-   path('<str:pk>/customer', Customer_detail.as_view(), name='customer-detail'),
-    
+    path('api/v1/customer/<str:pk>/delete', DeleteCustomerView, name='delete-customer'),
+    path('api/v1/customer/create', CreateCustomerView, name='create-customer'),
+    path('api/v1/customer', GetCustomer, name='customer'),
+
 ]

@@ -1,52 +1,32 @@
+from products.models import Product
+from asgiref.sync import sync_to_async
 
-def get_products_response(product, queryset):
-    """Response Data for GET request i.e all Product record"""
-    data = {
-        "status": "success",
-        "code": 200,
-        "message": "List of all Products retrieved successfully.",
-        "count": queryset,
-        "Products": product,
-    }
-    return data
+# Convert the product creation function into an async callable
+@sync_to_async
+def create_product(name, description, price, quantity, category, product_type, photo_1, photo_2, available_sizes, available_colors):
+    product = Product.objects.create(
+        name=name,
+        description=description,
+        price=price,
+        quantity=quantity,
+        category=category,
+        product_type=product_type,
+        photo_1=photo_1,
+        photo_2=photo_2,
+        available_sizes=available_sizes,
+        available_colors=available_colors,
+    )
+    product.save()
+    return product
 
-def post_products_response(product):
-    """Response Data for POST request i.e create new Product record"""
-    data = {
-        "status": "success",
-        "code": 201,
-        "message": "Product record added successfully.",
-        "Product": product,
-    }
-    
-    return data
 
-def retrieve_product_response_data(product):
-    """Response Data for GET request i.e single Product record"""
-    data = {
-        "status": "success",
-        "code": 200,
-        "message": "Product record retrieved successfully.",
-        "Product": product,
-    }
-    return data
 
-def update_product_response_data(product):
-    """Response Data for PUT or PATCH request i.e update single Product record"""
-    data = {
-        "status": "success",
-        "code": 200,
-        "message": "Product record updated successfully.",
-        "Product": product,
-    }
-    return data
+async def get_product(pk):
+    return await sync_to_async(Product.objects.get)(item_id=pk)
 
-def destroy_product_response_data():
-    """Response Data for Delete request i.e Delete single Product record"""
-    data = {
-        "status": "success",
-        "code": 204,
-        "message": "Product record deleted successfully.",
-    }
-    return data
+async def update_product(pk, fields):
+    product = Product.objects.filter(item_id=pk).update(**fields)
+    return product
+
+
 

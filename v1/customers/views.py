@@ -1,89 +1,111 @@
+import json
+from django.http import JsonResponse
 from django.shortcuts import render
-from rest_framework import generics 
-from rest_framework.exceptions import NotFound
-from rest_framework.response import Response
-from .models import Customer
-from rest_framework import status
-from services.serializers.customer import CustomerSerializer
-from services.utils.customers import *
-from services.utils.error import Error_Response
-from django.http import Http404
-
+from django.views.decorators.csrf import csrf_exempt
+from customers.models import Customer
+from django.contrib import messages
+from services.utils.customer import create_customer, check_customer_exists, get_customer, get_customer_details, update_customer
+from services.utils.user import check_user_exists, create_user, staff_required
+from django.db import IntegrityError
+from django.contrib.auth.decorators import login_required, user_passes_test
 # Create your views here.
-class Customers_view(generics.ListCreateAPIView):
-        """
-        GET: Retrieves all customer record
-        POST: Add new customer record
-        queryset: All rows in customer Entity (total number of customers)
-        serializer_class: All columns in customer Entity
-        """
-        queryset = Customer.objects.all()
-        serializer_class = CustomerSerializer
-        
-        # GET
-        def list(self, request, *args, **kwargs):
-            queryset = self.get_queryset()
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(get_customers_response(
-                queryset = queryset.count(), 
-                customer = serializer.data),
-                status = status.HTTP_200_OK,
-            )
 
-        # POST
-        def create(self, request, *args, **kwargs):
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            return Response(post_customers_response(
-                customer = serializer.data,     
-            ), status = status.HTTP_201_CREATED)
-        
-
-class Customer_detail(generics.RetrieveUpdateDestroyAPIView):
-    """
-       GET: Retrieves specific Customer record
-       PUT and PATCH: update specific Customer record
-       DELETE: delete specific Customer record
-       queryset: all row in Customer Entity
-       serializer_class: All columns in Customer Entity
-    """
-    queryset = Customer.objects.all()
-    serializer_class = CustomerSerializer
-    
-    def get_object(self):
+@login_required
+@user_passes_test(staff_required,  login_url='login', redirect_field_name='login')
+@csrf_exempt
+def DeleteCustomerView(request, pk):
+    if request.method == 'POST':
         try:
-            return super().get_object()
-        except Http404:
-            raise NotFound(detail=Error_Response(error="CustomerNotFound", message="Customer"), code=404)
+            customer = Customer.objects.get(customer_id=pk)
+            customer.delete()
+            messages.success(request, 'Customer deleted successfully!')
+            return JsonResponse({'success': True}, safe=True)
+        except Exception as e:
+            messages.error(request, f'Customer deletion Failed! {str(e)}')
+            return JsonResponse({'success': False}, safe=True)
+
+
+   
+
+async def CreateCustomerView(request):
+
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Invalid request method'}, safe=True, status=405)
+
+    try:
+        data = json.loads(request.body)
        
-    # def check_permissions(self, request):
-    #     if not request.user.has_perm('Customers.change_Customer'):
-    #         raise PermissionDenied({"error": "You do not have permission to update this object."})
-    #     return super().check_permissions(request)
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        email = data.get('email')
+        phone = data.get('phone')
+        address = data.get('address')
+        city = data.get('city')
+        country = data.get('country')
+        create_account = data.get('create_account')
 
-    # GET
-    def retrieve(self, request, *args, **kwargs):
-        Customer = self.get_object()
-        serializer = self.get_serializer(Customer)
-        return Response(retrieve_customer_response_data(
-            customer = serializer.data,
-        ), status=status.HTTP_200_OK)
+        if create_account:
+            if await check_user_exists(email):
+                customer = await update_customer(request.session.session_key, first_name, last_name, address, phone, email, city, country)
+                return JsonResponse({'success': True, 'message': 'Customer updated successfully!'}, safe=True, status=200)
+            if await check_customer_exists(email):
+                customer = await update_customer(request.session.session_key, first_name, last_name, address, phone, email, city, country, )
+                return JsonResponse({'success': True, 'message': 'Customer updated successfully!'}, safe=True, status=200)
+            user = await create_user(email, email, last_name)
+            customer = await create_customer(user, first_name, last_name, address, phone, email, city, country)
+            # await authenticate_user(request=request, username=email, password=last_name)
+            return JsonResponse({'success': True, 'message': 'Customer created successfully!'}, safe=True, status=200)
 
-    # Update
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(update_customer_response_data(
-            Customer = serializer.data,
-        ), status=status.HTTP_200_OK)
+        if await check_customer_exists(email):
+            customer = await update_customer(request.session.session_key, first_name, last_name, address, phone, email, city, country)
+            return JsonResponse({'success': True, 'message': 'Customer updated successfully!'}, safe=True, status=200)
+        else:
+            customer = await create_customer(None, first_name, last_name, address, phone, email, city, country)
+            return JsonResponse({'success': True, 'message': 'Customer created successfully!'}, safe=True, status=200)
+
+    except IntegrityError as e:
+        
+        return JsonResponse({'success': False, 'message': f'{e}'}, safe=True, status=400)
+    except Exception as e:
+        
+        return JsonResponse({'success': False, 'message': str(e)}, safe=True, status=500)
     
-    # Delete
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(destroy_customer_response_data(), 
-                        status=status.HTTP_204_NO_CONTENT)
+
+def GetCustomer(request):
+    try:
+        customer = Customer.objects.get(session=request.session.session_key)
+    except Customer.DoesNotExist:
+        if request.user.is_authenticated:
+            try:
+                customer = Customer.objects.get(user=request.user)
+            except Customer.DoesNotExist:
+                customer = None
+        else:
+            customer = None
+    except Exception as e:
+        customer = None
+
+    if customer:
+        customer_data = {
+            'id': customer.customer_id,
+            'first_name': customer.first_name,
+            'last_name': customer.last_name,
+            'address': customer.address,
+            'city': customer.city,
+            'country': customer.country,
+            'email': customer.email,
+            'phone': str(customer.phone),  
+            
+        }
+        data = {
+            'success': True,
+            'message': 'Customer details retrieved successfully',
+            'customer': customer_data
+        }
+    else:
+        data = {
+            'success': False,
+            'message': 'Customer not found'
+        }
+
+    return JsonResponse(data)

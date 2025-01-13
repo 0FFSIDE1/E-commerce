@@ -16,7 +16,8 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
 from datetime import timedelta
-
+import os
+from celery.schedules import crontab
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -46,11 +47,16 @@ INSTALLED_APPS = [
     'sellers',
     'reviews',
     'feedbacks',
+    'notifications',
+    'newsletter',
+    'app',
 
     # Third-Party Libraries
     'phonenumber_field',
     'rest_framework',
     'rest_framework_simplejwt',
+    'celery',
+    'django_celery_beat',
 
 ]
 
@@ -94,7 +100,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # custom middleware (check 'services/middleware')
-    'services.middleware.middleware.RequestMiddleware'
+    'services.middleware.middleware.CurrentRequestMiddleware'
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -102,7 +108,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -125,6 +131,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {
+            'timeout': 20,  # Time in seconds
+        },
     }
 }
 
@@ -169,3 +178,40 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+
+CELERY_BEAT_SCHEDULE = {
+    'delete-old-notifications': {
+        'task': 'notifications.tasks.delete_notifications_task',
+        'schedule': crontab(minute=0, hour=0),  # Run daily at midnight
+    },
+}
+
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Adjust for your Redis setup
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Adjust for your Redis setup
+CELERY_TRACK_STARTED = True
+CELERY_SEND_EVENTS = True
+
+
+
+# paystack
+PAYSTACK_SECRET_KEY= os.environ.get('PAYSTACK_SECRET_KEY')
+PAYSTACK_PUBLIC_KEY= os.environ.get('PAYSTACK_PUBLIC_KEY')
+
+# phone number
+PHONENUMBER_DEFAULT_REGION = "NG"
+PHONENUMBER_DB_FORMAT = "NATIONAL" 
+
+#Email config
+EMAIL_BACKEND=os.environ.get('EMAIL_BACKEND')
+EMAIL_HOST=os.environ.get('EMAIL_HOST')
+EMAIL_USE_TLS=os.environ.get('EMAIL_USE_TLS')
+EMAIL_PORT=os.environ.get('EMAIL_PORT')
+EMAIL_HOST_USER=os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD=os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL=os.environ.get('DEFAULT_FROM_EMAIL')
