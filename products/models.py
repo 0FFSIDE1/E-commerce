@@ -43,9 +43,9 @@ class Product(models.Model):
         )
 
     item_id = models.UUIDField(max_length=7, primary_key=True, default=uuid.uuid4)
-    brand = models.CharField(max_length=125, default=None, blank=False, null=False, unique=True)
+    brand = models.CharField(max_length=125, default=None,  unique=True)
     name =  models.CharField(max_length=125, default=None, blank=False, null=False, unique=True)
-    description = models.TextField(max_length=None, default=None, blank=True, null=True)
+    description = models.TextField(max_length=None, default=None)
     price =  models.PositiveIntegerField(default=0, blank=False, null=False)
     quantity = models.PositiveIntegerField(default=1, blank=False, null=False)
     category = models.CharField(choices=product_category, max_length=50, default=None, blank=False, null=False)
@@ -55,8 +55,8 @@ class Product(models.Model):
     available_sizes = models.JSONField(default=list, null=True, blank=True)
     available_colors = models.JSONField(default=list, null=True, blank=True)
     in_stock = models.BooleanField(default=True)
-    vendor = models.CharField(max_length=125, default=None, blank=False, null=False)
-    previous_price = models.CharField(max_length=125, default=None, blank=False, null=False)
+    vendor = models.CharField(max_length=125, default=None)
+    previous_price = models.CharField(max_length=125, default=None)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
