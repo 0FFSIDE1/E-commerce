@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'notifications',
     'newsletter',
     'app',
+    'coupons',
 
     # Third-Party Libraries
     'phonenumber_field',
