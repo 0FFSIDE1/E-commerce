@@ -55,7 +55,7 @@ class Product(models.Model):
     available_sizes = models.JSONField(default=list, null=True, blank=True)
     available_colors = models.JSONField(default=list, null=True, blank=True)
     in_stock = models.BooleanField(default=True)
-    # vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='products', null=True, blank=True)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='products', null=True, blank=True)
     previous_price = models.CharField(max_length=125, default=None, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

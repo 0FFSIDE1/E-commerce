@@ -36,13 +36,8 @@ async def AddProductView(request):
             
             # Run the image uploads concurrently
             result = await asyncio.gather(
-                upload_image(
-                    photo1, 
-                    f"Products/{category}/{product_type}"),
-
-                upload_image(
-                    photo2,
-                    f"Products/{category}/{product_type}"),
+                upload_image(photo1, f"Products/{category}/{product_type}"),
+                upload_image(photo2, f"Products/{category}/{product_type}"),
             )
 
             # Extract the image URLs from the responses
@@ -61,7 +56,7 @@ async def AddProductView(request):
                 product_type=product_type,
                 available_sizes=sizes,
                 available_colors=colors,
-                # vendor=request.user,
+                vendor=request,
                 )
 
             # Log successful product creation

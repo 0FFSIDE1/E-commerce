@@ -9,9 +9,8 @@ from services.utils.product import get_product
 from django.db import transaction
 from asgiref.sync import sync_to_async
 from django.views.decorators.http import require_http_methods
-from django.shortcuts import get_object_or_404
 import json
-from services.utils.customer import get_customer
+
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -32,7 +31,6 @@ async def AddToCart(request, pk):
         # Ensure the session exists
         session_key = await create_session_if_not_exists(request)
         
-        
         # Use a transaction to ensure atomicity
         await atomic_block()
         
@@ -40,24 +38,36 @@ async def AddToCart(request, pk):
         cart = await get_cart(user=request.user, session=session_key)
         
         if not cart:
+            logger.error(f"Cart not found.")
             raise ValueError("Cart not found.")
         
         # Fetch the product
         product = await get_product(pk=pk)
        
         if not product:
+            logger.error("Product not found.")
             raise ValueError("Product not found.")
         
         # Check product availability
         if int(product.quantity) <= 0:
+            logger.error("Product is out of stock.")
             raise ValueError("Product is out of stock.")
         
         # Add the product to the cart
         cartitem = await create_cartitem(product=product, cart=cart)
-       
-
-        # save the cart to get the total amount of items in the cart
+        if cartitem:
+            logger.info("CartItem Created Successfully")
+        else:
+            logger.error("Error Creating CartItem")
+            
+        # save the cart to get the total amount of items in the cart, controlled by signal
         success = await save_cart(user=request.user, session_key=session_key)
+
+        if success:
+            logger.info("Cart Saved Successfully")
+        else:
+            logger.error("Error saving cart")
+
         
 
         logger.info(f"Product '{product.name}' added to cart successfully.")
@@ -143,7 +153,7 @@ async def GetCart(request):
 @require_http_methods(["PATCH"])
 async def UpdateCartItem(request, pk):
     """
-    Endpoint to update cart item quantity
+    Endpoint to update cart item quantity, size, color or and other related fields
     PATCH /api/v1/<pk>/update-cart
     """
     try:

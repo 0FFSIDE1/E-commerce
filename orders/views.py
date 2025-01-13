@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from carts.models import Cart
@@ -74,6 +75,7 @@ def CreateOrderView(request):
 
             # Create the order
             order = Order.objects.create(customer=customer, cart=cart)
+            
             logger.debug('Order created: %s', order)
             
             # Generate invoice context
@@ -81,16 +83,48 @@ def CreateOrderView(request):
             logger.debug('Generated invoice: %s', invoice)
 
             try:
-                # Attempt to send the invoice email
+                # Attempt to send the invoice email to customer then clear the cart
                 result = admin_send_email.delay(context=invoice, to_email=customer.email, subject=f'Invoice for your order #{order.order_id}', body='emails/invoice.html')
                 logger.debug(f'Task queued for sending email: {result}')
                 clear_cart(cart)
                 logger.debug('Cart cleared after order creation')
 
-            except Exception as email_error:
-                logger.error(f'Error sending invoice email: {str(email_error)}')
+               # Group order items by vendor
+                vendor_items = defaultdict(list)  # Dictionary to group items by vendor
+                for item in order.cart.items.all():  # Assuming Cart has related cart_items
+                    vendor = item.product.vendor  # Assuming Product has a related vendor field
+                    vendor_items[vendor].append({
+                        'product_name': item.product.name,
+                        'quantity': item.quantity,
+                        'size': item.size,
+                        'color': item.color,
+                        'price': item.total_price,
+                    })
+            
+                # Notify each vendor with their respective items
+                for vendor, items in vendor_items.items():
+                    vendor_email = vendor.email  # Assuming Vendor model has an `email` field
+                    vendor_alert_context = {
+                        'order_id': order.order_id,
+                        'customer_name':  order.customer.first_name + ' ' + order.customer.last_name, 
+                        'total_amount': order.total_amount,
+                        'vendor_items': items,  # Include only the items related to this vendor
+                        'created_at': order.created_at,
+                        'status': order.status,
+                    }
+                    vendor_alert_result = admin_send_email.delay(
+                        context=vendor_alert_context,
+                        to_email=vendor_email,
+                        subject=f'New order #{order.order_id} placed by {order.customer.first_name}',
+                        body='emails/vendor_alert.html'
+                    )
+                    logger.debug(f'Task queued for sending email to vendor: {vendor_alert_result}')
 
-            return JsonResponse({'success': True, 'order_id': order.order_id, 'amount': order.total_amount})
+
+            except Exception as email_error:
+                logger.error(f'Error sending email: {str(email_error)}')
+
+            return JsonResponse({'success': True, 'order_id': order.order_id, 'amount': order.total_amount, 'message': 'Order Created Successfully'})
 
         except Exception as e:
             logger.error(f'Error processing order: {str(e)}')

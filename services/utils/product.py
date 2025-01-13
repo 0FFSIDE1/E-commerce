@@ -1,26 +1,36 @@
 from products.models import Product
 from asgiref.sync import sync_to_async
 from sellers.models import Vendor
+from django.core.exceptions import ObjectDoesNotExist
 
 # Convert the product creation function into an async callable
 @sync_to_async
 def create_product(name, description, price, quantity, category, product_type, photo_1, photo_2, available_sizes, available_colors, vendor):
-    # vendor = Vendor.objects.get(user=vendor)
-    product = Product.objects.create(
-        name=name,
-        description=description,
-        price=price,
-        quantity=quantity,
-        category=category,
-        product_type=product_type,
-        photo_1=photo_1,
-        photo_2=photo_2,
-        available_sizes=available_sizes,
-        available_colors=available_colors,
-        # vendor=vendor,
-    )
-    product.save()
-    return product
+    try:
+        vendor_instance = Vendor.objects.get(user=vendor.user)
+        product = Product.objects.create(
+            name=name,
+            description=description,
+            price=float(price),
+            quantity=int(quantity),
+            category=category,
+            product_type=product_type,
+            photo_1=photo_1,
+            photo_2=photo_2,
+            available_sizes=available_sizes,
+            available_colors=available_colors,
+            vendor=vendor_instance,
+        )
+        product.save()
+        return product
+    except ObjectDoesNotExist:
+        raise ValueError("Vendor does not exist for the provided user.")
+
+    except ValueError as ve:
+        raise ValueError(f"Invalid data provided: {ve}")
+
+    except Exception as e:
+        raise RuntimeError(f"Error creating product: {e}")
 
 
 

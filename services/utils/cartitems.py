@@ -15,8 +15,7 @@ def create_cartitem(product, cart):
     cartitem, created = CartItem.objects.get_or_create(
         product=product,
         cart=cart,
-        size='M',
-        color='Black',
+
     )
     if created:
         pass
