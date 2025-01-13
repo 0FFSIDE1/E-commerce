@@ -31,15 +31,12 @@ class AddCouponView(View):
 
             # Log successful Coupon creation
             logger.info(f"Coupon  created successfully.")
-            messages.success(request, 'Coupon created successfully!')
-            return redirect('coupons')
+            return JsonResponse({'success': True, 'message': 'Coupon added successfully'}, safe=True)
 
         except Exception as e:
             # Log the exception for debugging purposes
             logger.error(f"Error adding Coupon: {str(e)}")
-            messages.error(request, f"An error occurred: {str(e)}")
-            return redirect('coupons')
-
+            return JsonResponse({'success': False, 'message': f'Error adding coupon {e}'}, safe=True)
 
 
 @login_required

@@ -1,4 +1,4 @@
-from coupon.models import Coupon
+from coupons.models import Coupon
 from asgiref.sync import sync_to_async
 
 

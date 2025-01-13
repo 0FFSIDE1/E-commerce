@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from carts.models import Cart
 from customers.models import Customer
-from coupon.models import Coupon
+from coupons.models import Coupon
 
 class ApplyCouponViewTest(TestCase):
     def setUp(self):
