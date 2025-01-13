@@ -1,5 +1,5 @@
 from celery import shared_task
-from services.celery.tasks.notification import delete_notifications, expire_notifications
+from services.celery.services.notification import delete_notifications, expire_notifications
 
 
 @shared_task

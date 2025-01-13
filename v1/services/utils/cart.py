@@ -1,18 +1,16 @@
 from carts.models import Cart
-from products.models import Product
-from rest_framework.exceptions import NotFound
-from django.core.exceptions import ObjectDoesNotExist
 from customers.models import Customer
-from django.db import transaction
-from orders.models import Order
+from asgiref.sync import sync_to_async
 
-async def get_cart(request=None, customer=None):
+
+@sync_to_async
+def get_cart(user, session):
     """
     Retrieve or create a cart for a customer or an anonymous user.
 
     Args:
-        request: The HTTP request object (used for anonymous users).
-        customer: A Customer object (used for logged-in users).
+        user: The HTTP request object (used for anonymous users).
+        session: A Customer object (used for logged-in users).
 
     Returns:
         Cart object for the specified customer or session.
@@ -20,56 +18,76 @@ async def get_cart(request=None, customer=None):
     Raises:
         ValueError: If neither request nor customer is provided.
     """
-    if not (request or customer):
+    if not user and not session:
         raise ValueError("Either 'request' or 'customer' must be provided to retrieve or create a cart.")
 
     try:
-        if customer:
-            # Retrieve or create a cart for a specific customer
-            cart, created = Cart.objects.get(customer=customer)
-        elif request:
-            # Retrieve or create a cart for a anonymous user, session_id is being controlled by signal
-            cart = Cart.objects.get_or_create()
+        
+        cart, created = Cart.objects.get(user=user)
+       
         return cart
 
-    except ObjectDoesNotExist:
-        raise ValueError("Unable to retrieve or create a cart.")
-
-
-
-
-async def get_product_or_404(name):
-    try:
-        return Product.objects.get(name=name)
-    except Product.DoesNotExist:
-        raise NotFound({"error": "Product not found."})
-    
-
-async def create_order_from_cart(request):
-    try:
-       
-        customer = Customer.objects.get(user=request.user)
-        cart = await get_cart(request=request, customer=customer)
-        cart_items = cart.items.select_related('product')
-        if not cart_items.exists():
-            raise ValueError("Cart is Empty")
-        # Create order and delete cart items (or mark as processed)
-        with transaction.atomic():
-            order = Order.objects.create(
-                cart=cart,
-                customer=customer,
-            )
-            
-        return order  
     except Exception as e:
-        raise ValueError(f"Unable to perform action.{e}")
-        
+        # Retrieve or create a cart for a anonymous user, session_id is being controlled by signal
+        cart = Cart.objects.get_or_create(session=session)
+
+        return cart[0]
+    except Cart.DoesNotExist:
+        # Retrieve or create a cart for a anonymous user, session_id is being controlled by signal
+        # customer = Customer.objects.get(session=session)
+        # cart = Cart.objects.get(customer=customer.session)
+        cart = Cart.objects.get_or_create(session=session)
+
+
+        return cart[0]
+    
+   
+
+
+@sync_to_async
+def get_cart_by_customer(customer):
+    """This function gets  or create a based on logged user"""
+    cart = Cart.objects.get(user=customer)
+    
+    return cart
+   
+
+@sync_to_async
+def get_cart_by_session(session_key):
+    """This function gets or create cart based on a session for anonymous user"""
+    
+    cart = Cart.objects.get_or_create(session=session_key)
+    
+    return cart[0]
+
+
+@sync_to_async
+def save_cart(user, session_key):
+    """ This Function saves a cart"""
+    try:
+        '''Save a cart for registered user and logged in user'''
        
-           
-      
+        cart = Cart.objects.get(user=user)
+        
+        cart.save()
+        
+    except Exception as e:
+        '''Save a cart for anonymous customer, (for first time users)'''    
+        cart = Cart.objects.get(session=session_key)
+
+        cart.save()
+    return cart   
+   
+@sync_to_async
+def update_cart(cart):
+    cart.save() 
 
 
-async def clear_cart(cart):
+def clear_cart(cart):
     """Clear a cart"""
-    data = cart.items.all().delete()
+    cart.items.all().delete()
+    cart.total_amount = 0.00
+    cart.save()
+    data = 'Cart Cleared'
     return data
+

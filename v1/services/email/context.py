@@ -24,7 +24,7 @@ def context(order):
     due_date = timezone.localtime(order.created_at) + timedelta(hours=2)
     eta = timezone.localtime(due_date) + timedelta(days=5)
     account = AccountManager.objects.all().first()
-    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S') + timedelta(hours=1)
     
 
     data = {

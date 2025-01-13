@@ -66,13 +66,20 @@ async def AddProductView(request):
             # Log successful product creation
             logger.info(f"Product '{name}' created successfully.")
             messages.success(request, 'Product added to inventory successfully!')
-            return redirect('add-products')
+            context = {
+                'success': True,
+                'message': 'Product added successfully'
+            }
+            return JsonResponse(context, safe=True)
 
         except Exception as e:
             # Log the exception for debugging purposes
             logger.error(f"Error adding product: {str(e)}")
-            messages.error(request, f"An error occurred: {str(e)}")
-            return redirect('add-products')
+            context = {
+                'success': False,
+                'message': f'Failed to add product {e}'
+            }
+            return JsonResponse(context, safe=True)
 
 
 
@@ -139,12 +146,18 @@ async def UpdateProductView(request, pk):
             # Save asynchronously
             await sync_to_async(product.save)()
   
-            messages.success(request, 'Product updated successfully!')
-            return redirect('product-detail', pk=product.item_id)
+            context = {
+                'success': True,
+                'message': 'Product Updated Successfully'
+            }
+            return JsonResponse(context, safe=True)
            
         except Exception as e:
-            messages.error(request, f"An error occurred: {str(e)}")
-            return redirect('product-detail', pk=product.item_id)
+            context = {
+                'success': False,
+                'message': f'Failed to update product {e}'
+            }
+            return JsonResponse(context, safe=True)
     
 
 @login_required

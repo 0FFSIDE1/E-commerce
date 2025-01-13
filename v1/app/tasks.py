@@ -1,5 +1,5 @@
 from celery import shared_task
-from v1.services.celery.tasks.admin_send_email import admin_send_mail
+from services.celery.services.admin_send_email import admin_send_mail
 
 
 

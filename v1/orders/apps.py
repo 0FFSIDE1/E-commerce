@@ -7,4 +7,5 @@ class OrdersConfig(AppConfig):
 
 
     def ready(self):
-        from services.signals.order import create_orderitems
+        from services.signals.order.order import create_orderitems
+        from services.signals.order.total_order import update_delivered_orders_for_vendor, update_vendor_total_orders

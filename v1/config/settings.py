@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     # Third-Party Libraries
     'phonenumber_field',
     'rest_framework',
-    'rest_framework_simplejwt',
+    # 'rest_framework_simplejwt',
     'celery',
     'django_celery_beat',
 
