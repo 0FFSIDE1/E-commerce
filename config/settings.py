@@ -9,29 +9,59 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv()
 from datetime import timedelta
 import os
 from celery.schedules import crontab
-# Quick-start development settings - unsuitable for production
+import cloudinary
+import cloudinary_storage
+import cloudinary.uploader
+import cloudinary.api
+
+load_dotenv()
+
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+ENVIRONMENT = os.environ.get('ENVIRONMENT')
+
+# Quick-start production/development settings - suitable for production/development
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-w67))o3@iz_y7#ct&t-^+0tbu&z!k$)9!b818_a5p8g(^!e)8o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if ENVIRONMENT == "Production":
 
-ALLOWED_HOSTS = []
+    DEBUG = False
+else:
+    DEBUG = True
 
+
+if ENVIRONMENT == "Production":
+
+    ALLOWED_HOSTS = []
+    CSRF_TRUSTED_ORIGINS = []
+
+else:
+    ALLOWED_HOSTS = []
+    CSRF_TRUSTED_ORIGINS = []
+
+
+if ENVIRONMENT == 'Production':
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+   
+    # Other security settings 
+    SECURE_SSL_REDIRECT = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,6 +69,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Project Apps
     'products',
     'customers',
     'orders',
@@ -58,6 +90,12 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'celery',
     'django_celery_beat',
+    'redis',
+    'flower',
+    'whitenoise',
+    'cloudinary',
+    'cloudinary_storage',
+
 
 ]
 
@@ -93,6 +131,7 @@ SIMPLE_JWT = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -125,19 +164,21 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        'OPTIONS': {
-            'timeout': 20,  # Time in seconds
-        },
+if ENVIRONMENT == 'Production':
+    # Database
+    # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+    DATABASES = {
+        'default': dj_database_url.config(default=os.environ.get('DATABASE_URL')),
     }
-}
 
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+   
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -180,8 +221,14 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+CLOUDINARY_URL = os.environ.get('CLOUDINARY_URL')
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET'),
+)
 
-
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CELERY_BEAT_SCHEDULE = {
     'delete-old-notifications': {
