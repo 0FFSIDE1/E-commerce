@@ -228,6 +228,7 @@ cloudinary.config(
     api_secret=os.environ.get('CLOUDINARY_API_SECRET'),
 )
 
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CELERY_BEAT_SCHEDULE = {
@@ -237,11 +238,34 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
+if ENVIRONMENT == 'Development':
+    pass
+else:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'level': 'DEBUG',
+                'class': 'logging.StreamHandler',
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['console'],
+                'level': 'ERROR',
+                'propagate': True,
+            },
+        },
+    }
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Adjust for your Redis setup
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')  # Adjust for your setup
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL  # Adjust for your setup
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Adjust for your Redis setup
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_TASK_TIME_LIMIT = 10000  # Set an appropriate time limit (in seconds)
+CELERY_TASK_SOFT_TIME_LIMIT = 10000
 CELERY_TRACK_STARTED = True
 CELERY_SEND_EVENTS = True
 
@@ -258,8 +282,8 @@ PHONENUMBER_DB_FORMAT = "NATIONAL"
 #Email config
 EMAIL_BACKEND=os.environ.get('EMAIL_BACKEND')
 EMAIL_HOST=os.environ.get('EMAIL_HOST')
-EMAIL_USE_TLS=os.environ.get('EMAIL_USE_TLS')
-EMAIL_PORT=os.environ.get('EMAIL_PORT')
+EMAIL_USE_TLS = True
+EMAIL_PORT = 465
 EMAIL_HOST_USER=os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD=os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL=os.environ.get('DEFAULT_FROM_EMAIL')
