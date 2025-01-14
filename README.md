@@ -8,43 +8,40 @@ E commerce version one
  git clone "<repo_url>"
 ```
 
-2. Navigate to v1 folder.
- ```sh
- cd v1
-```
 
-3. Create a virtual environment.
+
+2. Create a virtual environment.
  ```bash
     python3 -m venv .venv
  ```
 
-4. Activate virtual environment.
+3. Activate virtual environment.
 ```bash
     source /path/to/venv/bin/activate`
 ```
 
-5. Install project dependencies `pip install -r requirements.txt`
+4. Install project dependencies `pip install -r requirements.txt`
 
-6. Create your own branch.
+5. Create your own branch.
  ```sh
  git branch <branch-name>
 ```
 
-7. Pull from origin/dev branch.
+6. Pull from origin/dev branch.
  ```sh
  git fetch origin dev
  git merge origin/dev
 
 ```
-8. Create a .env file by copying the .env.sample file
+7. Create a .env file by copying the .env.sample file
 `cp .env.sample .env`
 
-9. Make makemigrations.
+8. Make makemigrations.
  ```sh
  python manage.py makemigrations
 ```
 
-10. Migrate.
+9. Migrate.
  ```sh
  python manage.py migrate
 ```
