@@ -9,7 +9,6 @@ app = Celery('config')
 
 app.conf.update(
     broker_url=os.environ.get('REDIS_URL'),
-    # result_backend=os.environ.get('REDIS_URL', 'redis://localhost:6379/0'),
     broker_connection_retry=True,  # Retry broker connections during runtime
     broker_connection_retry_on_startup=True,  # Retry broker connections during startup
     worker_pool='solo',  # Use the solo pool

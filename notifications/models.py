@@ -8,12 +8,8 @@ class Notification(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='customer_notification')
     title = models.CharField(max_length=100, default=None, blank=False, null=False)
     message = models.CharField(max_length=225, default=None, blank=False, null=False)
-
-    
     created_at = models.DateTimeField(auto_now_add=True)
-    
     opened_at = models.DateTimeField(default=None, null=True, blank=True)
-    
     choices = (('unread', 'unread'), ('expired', 'expired'), ('read', 'read'))
     status = models.CharField(choices=choices, default='unread', max_length=10)
 

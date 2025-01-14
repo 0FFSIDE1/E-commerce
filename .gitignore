@@ -20,7 +20,8 @@ venv.bak/
 local_settings.py
 db.sqlite3
 media/
-
+*dump_data.py
+dump_data.py
 *migrations
 *migrations/
 migrations/

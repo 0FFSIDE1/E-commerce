@@ -18,19 +18,10 @@ class Payment(models.Model):
         default='Pending',
     )
     payment_method = models.CharField(max_length=50)
-    ref = models.CharField(default=uuid.uuid4, editable=False, max_length=100)
+    ref = models.CharField(default=payment_id, editable=False, max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.payment_id} | {self.order} | {self.status}"
     
 
-class Invoice(models.Model):
-    invoice_id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
-    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='invoice')
-    payment = models.OneToOneField(Payment, on_delete=models.CASCADE, null=False, blank=False, default=None)
-    shipping_address = models.TextField(max_length=100, default=None, blank=False, null=False)
-    generated_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Date: {self.generated_at}: {self.invoice_id} | {self.order} | {self.payment.status}"
