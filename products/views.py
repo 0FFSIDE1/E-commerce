@@ -261,7 +261,6 @@ def AllProducts(request):
             for product in page_obj
         ]
 
-        # Build the response
         response = {
             "products": product_list,
             "total_pages": paginator.num_pages,
