@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect
+from sellers.models import Vendor
 from services.utils.cloudinary import upload_image, get_image_urls
-from django.views import View
 import asyncio
 from products.models import Product
 from django.contrib import messages
@@ -11,8 +11,8 @@ from django.views.decorators.csrf import csrf_exempt
 from asgiref.sync import sync_to_async
 from django.contrib.auth.decorators import login_required, user_passes_test
 from services.utils.user import staff_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseForbidden
+from django.views.decorators.http import require_http_methods
+from django.core.paginator import Paginator
 # Set up logging
 logger = logging.getLogger(__name__)
 
@@ -169,5 +169,112 @@ def DeleteProductView(request, pk):
         except Exception as e:
             messages.error(request, f'Product deletion Failed! {str(e)}')
             return JsonResponse({'success': False}, safe=True)
+
+
+@login_required
+@user_passes_test(staff_required, login_url='login', redirect_field_name='login')
+def VendorProducts(request):
+    if request.method == 'GET':
+        try:
+            # Get the vendor associated with the logged-in user
+            vendor = Vendor.objects.get(user=request.user)
+
+            # Get all products for the vendor
+            products = Product.objects.filter(vendor=vendor)
+
+            # Pagination setup
+            page_number = request.GET.get('page', 1)  # Default to page 1
+           
+
+            paginator = Paginator(products, 15) # show 15 per page
+            page_obj = paginator.get_page(page_number)
+
+            # Prepare the product data
+            product_list = [
+                {
+                    "id": product.id,
+                    "name": product.name,
+                    "price": product.price,
+                    "description": product.description,
+                    # Add other fields as needed
+                }
+                for product in page_obj
+            ]
+
+            context = {
+                "success": True,
+                "message": "Products retrieved successfully",
+                "products": product_list,
+                "total_pages": paginator.num_pages,
+                "current_page": page_obj.number,
+                "total_products": paginator.count,
+                "has_next": page_obj.has_next(),
+                "has_previous": page_obj.has_previous(),
+            }
+            return JsonResponse(context, safe=True)
+
+        except Vendor.DoesNotExist:
+            context = {
+                "success": False,
+                "message": "Vendor not found for the current user",
+            }
+            return JsonResponse(context, safe=True, status=404)
+
+        except Exception as e:
+            context = {
+                "success": False,
+                "message": f"Error occurred: {e}",
+            }
+            return JsonResponse(context, safe=True, status=500)
+
+    else:
+        context = {
+            "success": False,
+            "message": "Method not allowed",
+        }
+        return JsonResponse(context, safe=True, status=405)
+
+@require_http_methods(["GET"])
+def AllProducts(request):
+    try: 
+        # Retrieve all products
+        products = Product.objects.all()
+
+        # Get page number from query parameters
+        page_number = request.GET.get('page', 1)  # Default to page 1
+    
+        # Create a Paginator instance
+        paginator = Paginator(products, 15) # showing 15 per page
+
+        # Get the requested page of products
+        page_obj = paginator.get_page(page_number)
+
+        # Prepare the product data to be returned
+        product_list = [
+            {
+                "id": product.id,
+                "name": product.name,
+                "price": product.price,
+                "description": product.description,
+                # Add other fields as needed
+            }
+            for product in page_obj
+        ]
+
+        # Build the response
+        response = {
+            "products": product_list,
+            "total_pages": paginator.num_pages,
+            "current_page": page_obj.number,
+            "total_products": paginator.count,
+            "has_next": page_obj.has_next(),
+            "has_previous": page_obj.has_previous(),
+        }
+
+        return JsonResponse(response, safe=False, status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+        
 
 
