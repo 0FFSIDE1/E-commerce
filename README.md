@@ -46,6 +46,11 @@ E commerce version one
  python manage.py migrate
 ```
 
+10. Runserver.
+ ```sh
+ python manage.py runserver
+```
+
 
 ## Issues
 if you encounter the following Error, when you run the code below
