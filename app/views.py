@@ -9,3 +9,5 @@ from rest_framework import status
 # Create your views here.
 
 
+def index(request):
+    return render(request, 'app/index.html')

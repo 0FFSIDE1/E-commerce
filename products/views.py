@@ -10,7 +10,7 @@ from services.utils.product import create_product, get_product
 from django.views.decorators.csrf import csrf_exempt
 from asgiref.sync import sync_to_async
 from django.contrib.auth.decorators import login_required, user_passes_test
-from services.utils.user import staff_required
+from services.utils.user import staff_required, vendor_required
 from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
 # Set up logging
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 @login_required
-@user_passes_test(staff_required,  login_url='login', redirect_field_name='login')
+@user_passes_test(vendor_required,  login_url='login', redirect_field_name='login')
 async def AddProductView(request):
     if request.method == "POST": 
         try:
@@ -80,7 +80,7 @@ async def AddProductView(request):
 
 
 @login_required
-@user_passes_test(staff_required,  login_url='login', redirect_field_name='login')
+@user_passes_test(vendor_required,  login_url='login', redirect_field_name='login')
 async def UpdateProductView(request, pk):
     if request.method == 'POST':
         try:
@@ -157,7 +157,7 @@ async def UpdateProductView(request, pk):
     
 
 @login_required
-@user_passes_test(staff_required,  login_url='login', redirect_field_name='login')
+@user_passes_test(vendor_required,  login_url='login', redirect_field_name='login')
 @csrf_exempt
 def DeleteProductView(request, pk):
     if request.method == 'POST':
@@ -172,7 +172,7 @@ def DeleteProductView(request, pk):
 
 
 @login_required
-@user_passes_test(staff_required, login_url='login', redirect_field_name='login')
+@user_passes_test(vendor_required, login_url='login', redirect_field_name='login')
 def VendorProducts(request):
     if request.method == 'GET':
         try:
@@ -252,11 +252,11 @@ def AllProducts(request):
         # Prepare the product data to be returned
         product_list = [
             {
-                "id": product.id,
+                "id": product.item_id,
                 "name": product.name,
                 "price": product.price,
                 "description": product.description,
-                # Add other fields as needed
+               
             }
             for product in page_obj
         ]

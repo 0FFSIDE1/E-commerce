@@ -5,9 +5,17 @@ from django.contrib.auth import authenticate, login
 from carts.models import Cart
 from app.models import AdminUser
 from django.shortcuts import get_object_or_404
+
+from sellers.models import Vendor
 # Custom decorator to check if the user is staf
 def staff_required(user):
     user = get_object_or_404(AdminUser, user=user)
+    if user:
+        return True
+
+
+def vendor_required(user):
+    user = get_object_or_404(Vendor, user=user)
     if user:
         return True
 
@@ -24,8 +32,7 @@ def check_user_exists(email):
 
 def add_user_to_cart(request, user):
     cart =  Cart.objects.filter(session=request.session.session_key).update(user=user)
-    
-    
+     
     return cart
             
 

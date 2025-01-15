@@ -7,5 +7,5 @@ urlpatterns = [
    # path('', Customers_view.as_view(), name='all-customers'),
    # path('<str:pk>/customer', Customer_detail.as_view(), name='customer-detail'),
    
-    
+   path('vendor/dashboard', index, name="dashboard"),
 ]
