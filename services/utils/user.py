@@ -55,7 +55,7 @@ def check_password(password, password2):
     
 
 @sync_to_async
-def create_superuser(username, email, password):
+def create_superuser(username, email, password, phone):
     user = User.objects.create_user(
                     username=username,
                     email=email,
@@ -65,5 +65,6 @@ def create_superuser(username, email, password):
         email=email,
         user=user,
     )
+    vendor = Vendor.objects.create(username=username, email=email, phone=phone, brand_name="ALABALINE INC", category="Admin", first_name="ALABALINE_ADMIN", last_name="ALABALINE_ADMIN", address="Lagos, Nigeria", brand_type="Online Store", user=user)
     
     return admin
