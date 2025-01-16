@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class Newslettter(models.Model):
+class Newsletter(models.Model):
     email = models.EmailField(default=None, max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
 
