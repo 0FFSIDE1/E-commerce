@@ -1,7 +1,7 @@
 from collections import defaultdict
 import json
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect
 from carts.models import Cart
 from customers.models import Customer
 from orders.models import Order, OrderItem
@@ -66,6 +66,13 @@ def UpdateOrderView(request, pk):
                     'message': f'Error creating order {e}'
                 }
                 return JsonResponse(context, safe=True)
+    else:
+        context = {
+                    'success': False,
+                    'message': 'Method Not Allowed'
+                }
+        return JsonResponse(context, safe=True)
+
 
 
 def CreateOrderView(request):
@@ -239,7 +246,7 @@ def CustomerOrderDetail(request, pk):
         return JsonResponse(context, status=500)
     
 
-
+@login_required
 @require_http_methods(["GET"])
 @user_passes_test(vendor_required, login_url='login', redirect_field_name='login')
 def VendorOrder(request):
@@ -267,7 +274,7 @@ def VendorOrder(request):
         return JsonResponse(context,safe=True)
     
 
-
+@login_required
 @require_http_methods(["PATCH"]) 
 @user_passes_test(vendor_required, login_url='login', redirect_field_name='login')
 def VendorUpdateOrderItem(request, pk):

@@ -1,4 +1,7 @@
+from django.http import JsonResponse
 from rest_framework import generics
+from customers.models import Customer
+from orders.models import OrderItem
 from sellers.models import Vendor
 from services.serializers.vendor import LoginVendorSerializer, SellerSerializer
 from rest_framework.permissions import AllowAny
@@ -15,6 +18,9 @@ import logging
 from django.db import transaction
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required, user_passes_test
+from services.utils.user import vendor_required
+from django.views.decorators.http import require_http_methods
 logger = logging.getLogger(__name__)
 # Create your views here.
 
@@ -129,11 +135,43 @@ def LoginVendor(request):
         return render(request, 'app/login.html')
         
 
-# To view vendor details based on loged in user
-# @api_view(['GET'])
-# def GetVendor(request):
-#     try:
-#         vendor = Vendor.objects.get
+@login_required
+@require_http_methods(["GET"])
+@user_passes_test(vendor_required,  login_url='login', redirect_field_name='login')
+def VendorCustomersView(request):
+    try:
+        vendor = request.user #logged-in vendor
+
+        # get all the products attached to a vendor
+        vendor_product = vendor.product_set.all()
+        print(vendor)
+
+        # Get orders that include the vendor's products
+        order_items = OrderItem.objects.filter(product__in=vendor_product).select_related('order')
+        print(order_items)
+
+        # Get unique customers from these orders
+        customer_ids = order_items.values_list('order__customer_id', flat=True).distinct()
+        customers = Customer.objects.filter(customer_id__in=customer_ids)
+
+        # Serialize the customer data
+        customer_data = [
+            {
+                "id": customer.customer_id,
+                "name": f"{customer.first_name} {customer.last_name}",
+                "email": customer.email,
+                "phone": customer.phone,
+                "address": f"{customer.address}, {customer.city}, {customer.state}, {customer.country}",
+                
+            }
+            for customer in customers
+        ]
+        return JsonResponse({"customers": customer_data}, safe=False)
+    
+    except Exception as e:
+        return JsonResponse({"success": False, "message": f"Error fetching customers: {e}"}, safe=False)
+
+
 
 
 
