@@ -1,19 +1,26 @@
 from collections import defaultdict
+import json
 from django.http import JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from carts.models import Cart
 from customers.models import Customer
-from orders.models import Order
+from orders.models import Order, OrderItem
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from app.tasks import admin_send_email
+from sellers.models import Vendor
 from services.utils.cart import clear_cart
-from services.utils.user import add_user_to_cart, staff_required
+from services.utils.user import add_user_to_cart, staff_required, vendor_required
 import logging
 from services.email.context import context
 from django.views.decorators.http import require_http_methods
 from django.core.exceptions import ObjectDoesNotExist
 from services.serializers.order import OrderSerializer
+from django.core.exceptions import PermissionDenied
+
+
+
+
 logger = logging.getLogger(__name__)
 
 # Create your views here.
@@ -230,3 +237,78 @@ def CustomerOrderDetail(request, pk):
             'message': 'An unexpected error occurred. Please try again later.',
         }
         return JsonResponse(context, status=500)
+    
+
+
+@require_http_methods(["GET"])
+@user_passes_test(vendor_required, login_url='login', redirect_field_name='login')
+def VendorOrder(request):
+    try:
+        vendor_instance  = Vendor.objects.get(user=request.user)
+        vendor_orders = Order.objects.filter(orderitems__product__vendor=vendor_instance).distinct()
+        
+        order = OrderSerializer(vendor_orders)
+      
+        context = {
+            'success': True,
+            'status': 'success',
+            'message': 'Order Retrieved sucessfully',
+            'order': order,
+        }
+        return JsonResponse(context,safe=True)
+
+    except Exception as e:
+        context = {
+            'success': False,
+            'status': 'error',
+            'message': f'Error Retrieving Order {e}',
+            
+        }
+        return JsonResponse(context,safe=True)
+    
+
+
+@require_http_methods(["PATCH"]) 
+@user_passes_test(vendor_required, login_url='login', redirect_field_name='login')
+def VendorUpdateOrderItem(request, pk):
+
+    try: 
+        # parse the data from the request body
+        data = json.loads(request.body)
+
+        # Get the orderitem by id
+        order_item = get_object_or_404(OrderItem, pk=pk)
+
+        # Check if the logged-in vendor is allowed to update this order item
+        vendor = request.user
+        if order_item.product.vendor != vendor:
+            raise PermissionDenied("You are not authorized to update this order item.")
+        
+        for field, value in data.items():
+            if hasattr(order_item, field):
+                setattr(order_item, field, value)
+        
+        order_item.save()
+
+        # Return success response
+        return JsonResponse({
+            "message": "Order item updated successfully.",
+            "order_item": {
+                "id": order_item.id,
+                "name": order_item.name,
+                "size": order_item.size,
+                "color": order_item.color,
+                "price": str(order_item.price),
+                "quantity": order_item.quantity,
+                "total_price": str(order_item.total_price),
+            }
+        })
+    
+    except PermissionDenied as e:
+        return JsonResponse({"error": str(e)}, status=403)
+    
+    except Exception as e:
+        return JsonResponse({"error": "An error occurred."}, status=400)
+
+
+
