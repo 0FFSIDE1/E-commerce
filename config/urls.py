@@ -31,4 +31,5 @@ urlpatterns = [
     path('', include('newsletter.urls')),
     path('', include('app.urls')),
     path('', include('coupons.urls')),
+    path('', include('wishlist.urls')),
 ]
