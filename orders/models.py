@@ -4,6 +4,8 @@ from carts.models import Cart
 import uuid
 from django.db.models import Sum
 from decimal import Decimal
+
+from products.models import Product
 # Create your models here.
 
 class OrderStatus(models.TextChoices):
@@ -37,6 +39,7 @@ class OrderItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     order = models.ForeignKey(Order, on_delete=models.CASCADE, default=None, related_name='orderitems')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, default=None, blank=False, null=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
