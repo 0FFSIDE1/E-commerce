@@ -38,6 +38,7 @@ class Category(models.TextChoices):
     ENTERTAINMENT_AND_MEDIA = 'Entertainment & Media', 'Entertainment & Media'
     DIGITAL_PRODUCTS = 'Digital Products', 'Digital Products'
     LIGTHINGS_AND_CHANDELIERS = 'Ligthings & Chandelier', 'Ligthings & Chandelier'
+    ADMIN = 'Admin', 'Admin'
 
 class Store(models.TextChoices):
     ONLINE_STORE = 'Online Store', 'Online Store'

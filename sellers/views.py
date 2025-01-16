@@ -129,35 +129,15 @@ def LoginVendor(request):
         return render(request, 'app/login.html')
         
 
-# To view account based on auth
-class Profile_View(generics.RetrieveAPIView):
-    serializer_class = SellerSerializer
-    lookup_url_kwarg = "name"
-    permission_classes = [AllowAny]
+# To view vendor details based on loged in user
+# @api_view(['GET'])
+# def GetVendor(request):
+#     try:
+#         vendor = Vendor.objects.get
 
-    def get_queryset(self):
-        user = self.request.user
-        name = self.kwargs.get(self.lookup_url_kwarg)
-        if not name:
-            return NotFound("Name not found")
-        if user.is_staff:
-            return Vendor.objects.all()
 
-        return Vendor.objects.filter(name=name)
 
-    def get_object(self):
-        queryset = self.get_queryset()
-        name = self.kwargs.get(self.lookup_url_kwarg)
 
-        if not name:
-            raise NotFound("Name not provided.")
-
-        # Filter the queryset by name
-        obj = queryset.filter(name=name).first()
-        if not obj:
-            raise NotFound(f"No profile found for name: {name}.")
-        return obj
-    
 # Admin to see all vendors
 class All_View(generics.ListAPIView):
     serializer_class = SellerSerializer

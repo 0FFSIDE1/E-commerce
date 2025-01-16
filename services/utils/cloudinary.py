@@ -21,8 +21,8 @@ def sync_upload_image(image, folder):
             folder=folder,
             format='png',  # Ensuring the format is PNG
             transformation=[{
-                "width": 400,  # Resize the image to fit within 500x500
-                "height": 385,
+                "width": 385,  # Resize the image to fit within 500x500
+                "height": 330,
                 "crop": "fit",  # Ensure the image fits the dimensions
             }]
         )
