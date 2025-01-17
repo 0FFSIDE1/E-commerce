@@ -25,3 +25,10 @@ def set_session_id(sender, instance, created, **kwargs):
 
             instance.session = request.session.session_key
             instance.save()
+    else:
+         
+        # Recalculate total amount of cart
+        new_total_amount = instance.calculate_total_amount()
+        if instance.total_amount != new_total_amount:
+            # Update the total_amount directly in the database to avoid recursion
+            Cart.objects.filter(pk=instance.pk).update(total_amount=new_total_amount)
