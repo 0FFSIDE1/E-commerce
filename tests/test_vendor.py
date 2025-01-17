@@ -35,8 +35,8 @@ class VendorTests(TestCase):
         # cart and cart items
         self.cart = Cart.objects.create(customer=self.customer1)
         self.cart2 = Cart.objects.create(customer=self.customer2)
-        self.cart_item = CartItem.objects.create(cart=self.cart, product=self.product1, quantity=1)
-        self.cart_item2 = CartItem.objects.create(cart=self.cart2, product=self.product2, quantity=1)
+        self.cart_item = CartItem.objects.create(cart=self.cart, product=self.product1, quantity=1, size='M', color='Green')
+        self.cart_item2 = CartItem.objects.create(cart=self.cart2, product=self.product2, quantity=1, size='M', color='Green')
         
         # Orders
         self.order1 = Order.objects.create(customer=self.customer1, cart=self.cart)

@@ -13,26 +13,20 @@ logger = logging.getLogger(__name__)
 @login_required
 @require_http_methods(["POST"])
 def AddToWishlist(request, pk):
-    """Add a product to the user's wishlist."""
     try:
-        # Log the access to the view
-        logger.info("AddToWishlist view accessed by user: %s for product ID: %d", request.user, pk)
-
         # Get or create the wishlist for the logged-in user
         wishlist, created = Wishlist.objects.get_or_create(user=request.user)
-        logger.info("Wishlist retrieved or created for user: %s. Created: %s", request.user, created)
-
+        print(f"Wishlist: {wishlist}")
         # Get the product by its ID
-        product = Product.objects.get(item_id=pk)
-        logger.info("Product retrieved: %s (ID: %d)", product.name, pk)
+        product = Product.objects.get(pk=pk)
+        print(f"product: {product}")
 
         # Add the product to the wishlist
         wishlist_item, created = WishlistItem.objects.get_or_create(
             product=product,
             wishlist=wishlist
         )
-        logger.info("Wishlist item %s for product: %s (ID: %d). Created: %s", 
-                    wishlist_item, product.name, pk, created)
+        print(f"wishlist_item: {wishlist_item}")
 
         return JsonResponse({
             'success': True,
@@ -41,7 +35,6 @@ def AddToWishlist(request, pk):
         }, status=201)
 
     except Product.DoesNotExist:
-        logger.warning("Product with ID %d not found", pk)
         return JsonResponse({
             'success': False,
             'message': 'Product not found',
@@ -49,8 +42,6 @@ def AddToWishlist(request, pk):
         }, status=404)
 
     except Exception as e:
-        logger.error("Error while adding product ID %d to wishlist for user %s: %s",
-                     pk, request.user, str(e), exc_info=True)
         return JsonResponse({
             'success': False,
             'message': 'An error occurred while adding product to wishlist',
@@ -62,22 +53,16 @@ def AddToWishlist(request, pk):
 @login_required
 @require_http_methods(["GET"])
 def GetWishlist(request):
-    """Retrieve the user's wishlist."""
     try:
-        # Log access to the view
-        logger.info("GetWishlist view accessed by user: %s", request.user)
-
         # Get the user's wishlist
         wishlist = Wishlist.objects.get(user=request.user)
-        logger.info("Wishlist retrieved for user: %s", request.user)
+        print(f"user: {wishlist}")
 
         # Retrieve all items in the wishlist
         wishlist_items = WishlistItem.objects.filter(wishlist=wishlist)
-        logger.info("Wishlist items count for user %s: %d", request.user, wishlist_items.count())
 
         # Check if the wishlist is empty
         if not wishlist_items.exists():
-            logger.info("Wishlist is empty for user: %s", request.user)
             return JsonResponse({
                 'success': True,
                 'message': 'Wishlist is empty',
@@ -96,7 +81,6 @@ def GetWishlist(request):
             }
             for item in wishlist_items
         ]
-        logger.info("Wishlist serialized successfully for user: %s", request.user)
 
         return JsonResponse({
             'success': True,
@@ -106,7 +90,7 @@ def GetWishlist(request):
         }, status=200)
 
     except Wishlist.DoesNotExist:
-        logger.warning("Wishlist does not exist for user: %s", request.user)
+        logger.warning(f"Wishlist does not exist for user: {request.user}")
         return JsonResponse({
             'success': False,
             'message': 'Wishlist does not exist for the user',
@@ -114,7 +98,7 @@ def GetWishlist(request):
         }, status=404)
 
     except Exception as e:
-        logger.error("Error retrieving wishlist for user %s: %s", request.user, str(e), exc_info=True)
+        logger.error(f"Error retrieving wishlist for user {request.user}: {str(e)}")
         return JsonResponse({
             'success': False,
             'message': 'Failed to retrieve wishlist',
@@ -125,40 +109,22 @@ def GetWishlist(request):
 @login_required
 @require_http_methods(["DELETE"])
 def DeleteWishlistItem(request, pk):
-    """Delete an item from the wishlist."""
     try:
-        logger.info("DeleteWishlistItem view accessed by user: %s", request.user)
-
-        # Retrieve the wishlist item by its ID
         wishlistitem = WishlistItem.objects.get(pk=pk)
-        logger.info("Wishlist item found: ID %s for user %s", pk, request.user)
-
-        # Delete the item
         wishlistitem.delete()
-        logger.info("Wishlist item ID %s successfully deleted for user %s", pk, request.user)
-
         context = {
             'success': True,
             'message': 'Item removed from wishlist',
-            'status': 'Success',
+            'status': 'Error',
         }
         return JsonResponse(context, safe=True)
-
-    except WishlistItem.DoesNotExist:
-        logger.warning("Wishlist item with ID %s not found for user %s", pk, request.user)
-        context = {
-            'success': False,
-            'message': 'Wishlist item not found',
-            'status': 'Error',
-        }
-        return JsonResponse(context, safe=True, status=404)
-
+    
     except Exception as e:
-        logger.error("Error deleting wishlist item ID %s for user %s: %s", pk, request.user, str(e), exc_info=True)
         context = {
             'success': False,
-            'message': 'Error deleting wishlist item',
+            'message': 'Error deleting wishlist',
             'status': 'Error',
         }
-        return JsonResponse(context, safe=True, status=500)
+        return JsonResponse(context, safe=True)
+    
 
