@@ -18,7 +18,7 @@ def AddToWishlist(request, pk):
         wishlist, created = Wishlist.objects.get_or_create(user=request.user)
         print(f"Wishlist: {wishlist}")
         # Get the product by its ID
-        product = Product.objects.get(pk=pk)
+        product = Product.objects.get(item_id=pk)
         print(f"product: {product}")
 
         # Add the product to the wishlist
