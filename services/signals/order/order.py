@@ -13,12 +13,13 @@ def create_orderitems(sender, instance, created, **kwargs):
             for item in instance.cart.items.all():
                 instance.orderitems.create(
                     name=item.product.name,
-                    size=item.size,
-                    color=item.color,
+                    size='M',
+                    color='Black',
                     price=item.product.price,
                     quantity=item.quantity,
                     total_price=item.total_price,
                     order=instance,
+                    product=item.product,
                 )
         finally:
             # Reconnect the signal

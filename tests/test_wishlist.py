@@ -35,7 +35,7 @@ class WishlistTests(TestCase):
         invalid_url = reverse('add-to-wishlist', kwargs={'pk': invalid_uuid})
         response = self.client.post(invalid_url)
         self.assertEqual(response.status_code, 404)
-        self.assertFalse(WishlistItem.objects.filter(wishlist__user=self.user, product__pk=999).exists())
+        self.assertFalse(WishlistItem.objects.filter(wishlist__user=self.user, product__pk=invalid_uuid).exists())
 
     
 

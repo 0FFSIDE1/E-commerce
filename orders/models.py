@@ -33,8 +33,8 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     name = models.CharField(max_length=50, default=None, blank=False, null=False)
-    size = models.CharField(max_length=20, default=None, blank=False, null=False)
-    color = models.CharField(max_length=20, default=None, blank=False, null=False)
+    size = models.CharField(max_length=20, default=None)
+    color = models.CharField(max_length=20, default=None)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     quantity = models.PositiveIntegerField(default=1)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
