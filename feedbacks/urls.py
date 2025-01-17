@@ -4,7 +4,8 @@ from .views import *
 
 
 urlpatterns = [
-   path('feedback', Feedbacks_view.as_view(), name='all-feedbacks'),
-   path('<str:pk>/feedback', Feedback_detail.as_view(), name='feedback-detail'),
+   path('api/v1/feedback/create', CreateFeedback, name='create-feedbacks'),
+   path('api/v1/feedback', GetFeedback, name='all-feedbacks'),
+   path('api/v1/<int:pk>/feedback', GetFeedbackDetail, name='feedback-detail'),
     
 ]
