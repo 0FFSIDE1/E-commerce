@@ -1,16 +1,19 @@
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from orders.models import Order
 
 @receiver(post_save, sender=Order)
-def update_vendor_total_orders(sender, instance, created, **kwargs):
+def update_vendor_total_orders_and_customers(sender, instance, created, **kwargs):
     if created:
         # Increment the total orders for each vendor associated with the cart items
         for item in instance.cart.items.all():
             vendor = item.product.vendor
             vendor.total_orders += 1
+            vendor.total_customers += 1
             vendor.save()
-
+            
+          
 
 
 @receiver(post_save, sender=Order)
