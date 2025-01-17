@@ -13,8 +13,8 @@ def create_orderitems(sender, instance, created, **kwargs):
             for item in instance.cart.items.all():
                 instance.orderitems.create(
                     name=item.product.name,
-                    size='M',
-                    color='Black',
+                    size=item.size,
+                    color=item.color,
                     price=item.product.price,
                     quantity=item.quantity,
                     total_price=item.total_price,
