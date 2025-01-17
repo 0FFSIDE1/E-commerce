@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import gettext_lazy as _
@@ -48,8 +49,9 @@ class Store(models.TextChoices):
 
 class Vendor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, related_name="vendor")
-    username = models.CharField(max_length=50, default=None, blank=False, null=False)
-    brand_name = models.CharField(max_length=50, default=None, blank=False, null=False)
+    vendor_id = models.UUIDField(default=uuid.uuid4, editable=False, )
+    username = models.CharField(max_length=50, default=None, blank=False, null=False, unique=True)
+    brand_name = models.CharField(unique=True, max_length=50, default=None, blank=False, null=False)
     first_name = models.CharField(max_length=50, default=None, blank=False, null=False)
     last_name = models.CharField(max_length=50, default=None, blank=False, null=False)
     email = models.EmailField(max_length=50, default=None, blank=False, null=False, unique=True)

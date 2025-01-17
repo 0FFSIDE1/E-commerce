@@ -4,8 +4,10 @@ from .views import *
 
 
 urlpatterns = [
-   # path('', Reviews_view.as_view(), name='all-reviews'),
-   # path('<str:pk>/reviews', Review_detail.as_view(), name='review-detail'),
-#    path('<str:name>/product',  get_product_review, name='product-reviews'),
-# ]
+      path('api/v1/product/<str:pk>/review/create', CreateProductReview, name='product-review'),
+      path('api/v1/product/<int:pk>/review', ProductReviewDetail, name='product-review-detail'),
+      path('api/v1/order/<str:pk>/review/create', CreateOrderReview, name='order-review'),
+      path('api/v1/order/<int:pk>/review', OrderReviewDetail, name='order-review-detail'),
+      path('api/v1/vendor/<str:pk>/review/create', CreateVendorReview, name='vendor-review'),
+      path('api/v1/vendor/<int:pk>/review', VendorReviewDetail, name='vendor-review-detail'),
 ]
