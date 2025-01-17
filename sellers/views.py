@@ -3,7 +3,7 @@ from rest_framework import generics
 from customers.models import Customer
 from orders.models import OrderItem
 from sellers.models import Vendor
-from services.serializers.vendor import LoginVendorSerializer, SellerSerializer
+from services.serializers.vendor import LoginVendorSerializer, SellerSerializer, UpdateVendorSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import NotFound, PermissionDenied
 from django.contrib.auth.models import User
@@ -96,6 +96,40 @@ class RegisterVendorView(APIView):
             }
             print(context)
             return Response(context, status=status.HTTP_422_UNPROCESSABLE_ENTITY,)
+
+@login_required  
+@api_view(['PATCH'])
+def UpdateVendor(request):
+        """Update Vendor"""
+        user = request.user
+        try:
+            vendor = Vendor.objects.get(user=user)
+        except Vendor.DoesNotExist:
+            return Response({'success': False, 'message': 'Vendor not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = UpdateVendorSerializer(vendor, data=request.data, partial=True)
+        if serializer.is_valid():
+            try:
+                with transaction.atomic():
+                    serializer.save()
+                    context = {
+                        'success': True,
+                        'status': 'success',
+                        'message': 'Vendor updated successfully.',
+                        'data': serializer.data,
+                    }
+                    return Response(context, status=status.HTTP_200_OK)
+            except Exception as e:
+                logger.error(f"Error during vendor update: {str(e)}")
+                return Response({'success': False, 'message': f'Update failed: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            error_messages = {field: ", ".join(errors) for field, errors in serializer.errors.items()}
+            print(error_messages)
+            return Response({
+                'success': False,
+                'message': 'Invalid data.',
+                'errors': error_messages,
+            }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)  
         
 @api_view(['POST', 'GET'])
 def LoginVendor(request):
@@ -173,9 +207,6 @@ def VendorCustomersView(request):
 
 
 
-
-
-
 # Admin to see all vendors
 class All_View(generics.ListAPIView):
     serializer_class = SellerSerializer
@@ -197,27 +228,3 @@ class All_View(generics.ListAPIView):
         return Vendor.objects.all()
     
     
-# To update
-class Update_View(generics.RetrieveUpdateAPIView):
-    queryset = Vendor.objects.all()
-    serializer_class = SellerSerializer
-    permission_classes = [AllowAny]
-    lookup_url_kwarg = "name"
-    lookup_field = "name"
-
-    def get_queryset(self):
-        name = self.kwargs.get(self.lookup_url_kwarg)
-        if not name:
-            raise NotFound("No name parameter found in the URL.")
-
-        queryset = Vendor.objects.filter(name=name)
-        if not queryset.exists():
-            raise NotFound(f"No user found with the name '{name}'.")
-        return queryset
-    
-# class retrieve(generics.RetrieveUpdateAPIView):
-#     queryset = Vendor.objects.all()
-#     serializer_class = SellerSerializer
-#     permission_classes = [AllowAny]
-#     lookup_url_kwarg = "name"
-#     lookup_field = "name"
