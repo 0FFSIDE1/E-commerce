@@ -254,7 +254,8 @@ def VendorOrder(request):
         vendor_instance  = Vendor.objects.get(user=request.user)
         vendor_orders = Order.objects.filter(orderitems__product__vendor=vendor_instance).distinct()
         
-        order = OrderSerializer(vendor_orders)
+        order = OrderSerializer(vendor_orders, many=True)
+        
       
         context = {
             'success': True,
