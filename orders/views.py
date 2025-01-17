@@ -260,7 +260,7 @@ def VendorOrder(request):
             'success': True,
             'status': 'success',
             'message': 'Order Retrieved sucessfully',
-            'order': order,
+            'order': order.data,
         }
         return JsonResponse(context,safe=True)
 

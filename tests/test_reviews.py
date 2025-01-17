@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from reviews.models import Product, Customer, ProductReview
 import json
 
-class CreateProductReviewTestCase(TestCase):
+class ProductReviewTestCase(TestCase):
     def setUp(self):
         # Create test user
         self.user = User.objects.create_user(username='testuser', password='password', email='example@gmail.com')

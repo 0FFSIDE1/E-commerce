@@ -1,4 +1,4 @@
-name: ALABALINE
+name: ALABALINE CI
 
 on:
   push:
