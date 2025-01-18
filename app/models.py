@@ -14,6 +14,7 @@ class AdminUser(models.Model):
     phone = PhoneNumberField(_("Phone Number"), unique=True, default=None)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='admin')
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.username} | {self.email}"
@@ -38,12 +39,12 @@ class AccountManager(models.Model):
 
 class SubscriptionPlan(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
-    description = models.TextField(null=True, blank=True,)
+    description = models.TextField(null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     duration_in_days = models.PositiveIntegerField(default=None, blank=False, null=False)  # Duration of the plan
 
     def __str__(self):
-        return f"{self.name} | {self.duration_in_days}"
+        return self.name
 
 class Subscription(models.Model):
     user = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name="subscription")
@@ -53,12 +54,13 @@ class Subscription(models.Model):
     is_active = models.BooleanField(default=True)
     
     def __str__(self):
-        return f"{self.user.username}'s Subscription: {self.start_date} to {self.expire_date} | {self.is_active}"
+        return f"{self.user.username}'s Subscription to {self.plan.name} Plan: From {self.start_date} to {self.expire_date} | {self.is_active}"
     
 
     @property
     def remaining_days(self):
-        return (self.expire_date - datetime.now().date()).days
+    
+        return (self.expire_date.date() - datetime.now().date()).days
 
     def deactivate(self):
         self.is_active = False

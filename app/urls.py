@@ -10,4 +10,7 @@ urlpatterns = [
    path('vendor/dashboard', index, name="dashboard"),
    path('api/v1/subscription/plans', SubcriptionPlanView.as_view(), name="subscription-plans"),
    path('api/v1/subscriptions', SubcriptionView.as_view(), name="subscriptions"),
+   path('api/v1/subscription/<int:pk>/update', RenewOrDeleteSubcriptionView.as_view(), name="update-subscription"),
+
+   
 ]
