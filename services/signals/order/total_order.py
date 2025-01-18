@@ -12,6 +12,7 @@ def update_vendor_total_orders_and_customers(sender, instance, created, **kwargs
             vendor.total_orders += 1
             vendor.total_customers += 1
             vendor.save()
+            break
             
           
 
@@ -32,5 +33,6 @@ def update_delivered_orders_for_vendor(sender, instance, **kwargs):
                 status='Delivered'
             ).distinct().count()
             vendor.save()
+            break
 
 
