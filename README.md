@@ -1,4 +1,4 @@
-# E Commerce Backend
+# E Commerce
 E commerce version one
 
 ## Setup
