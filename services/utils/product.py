@@ -5,9 +5,9 @@ from django.core.exceptions import ObjectDoesNotExist
 
 # Convert the product creation function into an async callable
 @sync_to_async
-def create_product(name, description, price, quantity, category, product_type, photo_1, photo_2, available_sizes, available_colors, vendor):
+def create_product(name, description, price, quantity, category, product_type, photo_1, photo_2, available_sizes, available_colors, request):
     try:
-        vendor_instance = Vendor.objects.get(user=vendor.user)
+       
         product = Product.objects.create(
             name=name,
             description=description,
@@ -19,7 +19,7 @@ def create_product(name, description, price, quantity, category, product_type, p
             photo_2=photo_2,
             available_sizes=available_sizes,
             available_colors=available_colors,
-            vendor=vendor_instance,
+            vendor=request.user.vendor,
         )
         product.save()
         return product
