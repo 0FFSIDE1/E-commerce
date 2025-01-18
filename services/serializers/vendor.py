@@ -7,7 +7,7 @@ class SellerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vendor
         fields = [
-            "first_name", "last_name", "brand_name", "address", "email", "phone", "currency", 'password', "city", "country", "state", "category", "brand_type", "username", 'total_customers', 'total_orders', 'total_orders_delivered', 'total_products',
+            "username", "first_name", "last_name", "brand_name", "category", "brand_type", "email", "phone", 'password', "address", "city", "state", "country", "currency", 'total_customers', 'total_orders', 'total_orders_delivered', 'total_products',
             ]
         extra_kwargs = {
             'password': {

@@ -66,7 +66,7 @@ class Vendor(models.Model):
     brand_type = models.CharField(choices=Store, max_length=50, default=None, blank=False, null=False)
     description = models.CharField(max_length=125, default=None, blank=True, null=True)
     
-    total_products = models.CharField(max_length=100, default=0, null=True, blank=True)
+    total_products = models.PositiveIntegerField(default=0)
     total_orders = models.PositiveIntegerField(default=0)
     total_orders_delivered = models.PositiveIntegerField(default=0)
     total_customers = models.PositiveIntegerField(default=0)
