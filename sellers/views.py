@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from rest_framework import generics
 from customers.models import Customer
-from orders.models import OrderItem
+from orders.models import Order, OrderItem
 from sellers.models import Vendor
 from services.serializers.vendor import LoginVendorSerializer, SellerSerializer, UpdateVendorSerializer
 from rest_framework.permissions import AllowAny
@@ -19,8 +19,10 @@ from django.db import transaction
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, user_passes_test
-from services.utils.user import vendor_required
+from services.utils.user import staff_required, vendor_required
 from django.views.decorators.http import require_http_methods
+from django.db.models import Count
+from django.db.models.functions import TruncMonth
 logger = logging.getLogger(__name__)
 # Create your views here.
 
@@ -212,31 +214,69 @@ def VendorCustomersView(request):
             for customer in customers
         ]
         logger.info("Customer data successfully serialized")
-        return JsonResponse({"customers": customer_data}, safe=False)
+        return JsonResponse({"customers": customer_data, 'total_customers': len(customer_data)}, safe=False)
     except Exception as e:
         logger.error("Error fetching customers: %s", str(e), exc_info=True)
         return JsonResponse({"success": False, "message": f"Error fetching customers: {e}"}, safe=False)
 
 
 
-# Admin to see all vendors
-class All_View(generics.ListAPIView):
-    serializer_class = SellerSerializer
-    queryset = Vendor.objects.all()
-    lookup_url_kwarg = "name"
+@login_required
+@require_http_methods(["GET"])
+@user_passes_test(vendor_required,  login_url='login', redirect_field_name='login')
+def GetMonthlyOrderForVendor(request):
+    try:
+        vendor = request.user.vendor
+        order = Order.objects.filter(cart__items__product__vendor=vendor)
+        # Annotate and group orders by month
+        monthly_orders = (
+            order.annotate(month=TruncMonth('created_at'))
+                .values('month')
+                .annotate(order_count=Count('order_id'))
+                .order_by('month')
+            )
+        # Format the data for response
+        result = [
+                {
+                    "month": item["month"].strftime("%Y-%m"),  # Format month as YYYY-MM
+                    "total_order": item["order_count"],
+                }
+                for item in monthly_orders
+            ]
+        return JsonResponse({
+                "success": True,
+                "message": "Vendor orders retrieved successfully",
+                "data": result,
+            }, status=200)
 
-    def get_queryset(self):
-        name = self.kwargs.get(self.lookup_url_kwarg)
-        if not name:
-            raise NotFound("Staff name not provided.")
-
-        try:
-            # Check if the name corresponds to a staff user
-            User.objects.get(username=name, is_staff=True)
-        except User.DoesNotExist:
-            raise PermissionDenied("Only staff members can view all vendor profiles.")
+    except Exception as e:
+            return JsonResponse({
+                "success": False,
+                "message": "An error occurred while retrieving vendor orders",
+                "error": str(e),
+            }, status=500)
         
-        # If the user is staff, return all vendor profiles
-        return Vendor.objects.all()
+
+@login_required
+@require_http_methods(["GET"])
+@user_passes_test(staff_required,  login_url='login', redirect_field_name='login')
+def AllVendorsView(request):
+    try: 
+        vendor = Vendor.objects.all()
+        serialiazer = SellerSerializer(vendor, many=True)
+        context = {
+            'success': True,
+            'message': 'Vendor retrieved successfully',
+            'vendors': serialiazer.data,
+            'total_vendors': len(serialiazer.data),
+        }
+        return JsonResponse(context, safe=True, status=200)
+    except Exception as e:
+        context = {
+            'success': False,
+            'message': f'error retrieving vendor list {e}',
+        }
+        return JsonResponse(context, safe=True, status=400)
+
     
     
