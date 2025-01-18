@@ -7,3 +7,4 @@ class AppConfig(AppConfig):
 
     def ready(self):
         from services.signals.otp import generate_code
+        from services.signals.subscription.generate_expire_date import generate_end_date
