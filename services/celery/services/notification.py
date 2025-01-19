@@ -19,7 +19,7 @@ def expire_notifications():
         seven_days_ago = datetime.now() - timedelta(days=7)
         
         # Query for unopened notifications older than 7 days
-        unopened_notifications = Notification.objects.filter(
+        unopened_notifications = Notification.objects.get(
             opened_at__isnull=True,
             created_at__lte=seven_days_ago,
             status="unread"
