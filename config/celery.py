@@ -8,7 +8,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 app = Celery('config')
 
 app.conf.update(
-    broker_url=os.environ.get('REDIS_URL'),
+    broker_url=os.environ.get('CELERY_BROKER_URL'),
     broker_connection_retry=True,  # Retry broker connections during runtime
     broker_connection_retry_on_startup=True,  # Retry broker connections during startup
     worker_pool='solo',  # Use the solo pool
