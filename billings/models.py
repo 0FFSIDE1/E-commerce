@@ -18,7 +18,6 @@ class Payment(models.Model):
         default='Pending',
     )
     payment_method = models.CharField(max_length=50)
-    ref = models.CharField(default=payment_id, editable=False, max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
