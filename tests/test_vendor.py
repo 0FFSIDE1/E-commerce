@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from rest_framework import status
 from django.contrib.auth.models import User
+from app.models import Subscription, SubscriptionPlan
 from carts.models import Cart, CartItem
 from customers.models import Customer
 from orders.models import Order
@@ -18,7 +19,7 @@ class VendorTests(TestCase):
         self.update_url = reverse('update-vendor')
         self.user = User.objects.create_user(username='testuser', email='testuser@example.com', password='password')
         self.user2 = User.objects.create_user(username='testuser1', email='testuser2@example.com', password='password')
-
+        
         session = self.client.session
         session.create()
         session_key = session.session_key
@@ -28,6 +29,11 @@ class VendorTests(TestCase):
         self.customer1 = Customer.objects.create(user=self.user, first_name='Test', last_name='User', address='Test Address', phone='+254712345678', email='test_email@gmail.com')
         self.customer2 = Customer.objects.create(user=self.user2, first_name='Test2', last_name='User2', address='Test Address', phone='+254712345674', email='test_email2@gmail.com')
 
+        self.subscriptionlan =  SubscriptionPlan.objects.create(name='TestPlan', duration_in_days=100, description='TestPlan', price=200)
+        self.subscriptionlan2 =  SubscriptionPlan.objects.create(name='TestPlan2', duration_in_days=150, description='TestPlan2', price=100)
+
+        self.subscription1 =  Subscription.objects.create(user=self.vendor, plan=self.subscriptionlan,)
+        self.subscription1 =  Subscription.objects.create(user=self.vendor2, plan=self.subscriptionlan2,)
         # products
         self.product1 = Product.objects.create(name='Test Product', quantity=10, price=100.00, category='Men', product_type='Men sets',  description="Test", vendor=self.vendor)
         self.product2 = Product.objects.create(name='Test Product2', quantity=10, price=100.00, category='Men', product_type='Men sets', description="Test", vendor=self.vendor2)
