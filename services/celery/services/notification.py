@@ -16,19 +16,18 @@ def expire_notifications():
         logger.info("Starting to expire unread notifications.")
         
         # Calculate the cutoff date for unread notifications
-        seven_days_ago = datetime.now() - timedelta(days=7)
         
         # Query for unopened notifications older than 7 days
-        unopened_notifications = Notification.objects.get(
-            opened_at__isnull=True,
-            created_at__lte=seven_days_ago,
+        unopened_notifications = Notification.objects.filter(
+            opened_at=None,
             status="unread"
         )
         
         # Update the status of those notifications to 'expired'
         updated_count = unopened_notifications.update(status="expired")
         
-        logger.info(f"{updated_count.count()} notifications marked as expired.")
+        
+        logger.info(f"{updated_count} notifications marked as expired.")
     
     except DatabaseError as db_error:
         logger.error(f"Database error while expiring notifications: {db_error}")
