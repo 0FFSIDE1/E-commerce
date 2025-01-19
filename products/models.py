@@ -43,7 +43,6 @@ class Product(models.Model):
         )
 
     item_id = models.UUIDField(max_length=7, primary_key=True, default=uuid.uuid4)
-    brand = models.CharField(max_length=125, default=None,  unique=True, null=True, blank=True)
     name =  models.CharField(max_length=125, default=None, blank=False, null=False, unique=True)
     description = models.TextField(max_length=None, default=None, null=True, blank=True)
     price =  models.PositiveIntegerField(default=0, blank=False, null=False)
