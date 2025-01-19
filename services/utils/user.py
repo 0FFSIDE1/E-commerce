@@ -3,7 +3,7 @@ from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from carts.models import Cart
-from app.models import AdminUser
+from app.models import AdminUser, Subscription
 from django.shortcuts import get_object_or_404
 
 from sellers.models import Vendor
@@ -17,7 +17,9 @@ def staff_required(user):
 def vendor_required(user):
     user = get_object_or_404(Vendor, user=user)
     if user:
-        return True
+        subcription = get_object_or_404(Subscription, user=user, is_active=True)
+        if subcription:
+            return True
 
 
 @sync_to_async
