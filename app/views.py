@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from app.models import Subscription, SubscriptionPlan
 from services.serializers.subcription import RenewSubscriptionSerializer, SubscriptionPlanSerializer, SubscriptionSerializer
-from services.utils.user import vendor_required
+from services.utils.user import staff_required, vendor_required
 from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -16,7 +16,6 @@ def index(request):
 
 
 class SubcriptionPlanView(APIView):
-
     @method_decorator(login_required)
     @method_decorator(user_passes_test(vendor_required, login_url='login', redirect_field_name='login'))
     def dispatch(self, *args, **kwargs):
@@ -25,7 +24,12 @@ class SubcriptionPlanView(APIView):
     def get(self, request):
         plans = SubscriptionPlan.objects.all()
         serializer = SubscriptionPlanSerializer(plans, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        context = {
+            'success': True,
+            'message': 'Plan retrieved successfully',
+            'plans': serializer.data,
+        }
+        return Response(context, status=status.HTTP_200_OK)
     
 
     def post(self, request):
@@ -42,10 +46,21 @@ class SubcriptionView(APIView):
         return super().dispatch(*args, **kwargs)
     
     def get(self, request):
-        subcriptions = Subscription.objects.all()
+        subcriptions = Subscription.objects.filter(user=request.user.vendor)
         serializer = SubscriptionSerializer(subcriptions, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        context = {
+            'success': True,
+            'message': 'Subscripton retrieved successfully',
+            'subs': serializer.data,
+        }
+        return Response(context, status=status.HTTP_200_OK)
     
+
+class AddSubscriptionView(APIView):
+    @method_decorator(login_required)
+    @method_decorator(user_passes_test(staff_required, login_url='login', redirect_field_name='login'))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
     def post(self, request):
         serializer = SubscriptionSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
