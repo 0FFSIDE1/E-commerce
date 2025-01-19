@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import gettext_lazy as _
-from datetime import timedelta, datetime
+from datetime import date, timedelta, datetime
 from sellers.models import Vendor
 
 User = get_user_model()
@@ -59,8 +59,11 @@ class Subscription(models.Model):
 
     @property
     def remaining_days(self):
-    
-        return (self.expire_date.date() - datetime.now().date()).days
+        if self.expire_date:
+            remaining = (self.expire_date - date.today()).days
+            return max(remaining, 0)  # Return 0 if the subscription has expired
+        return "No Expiration Date"
+
 
     def deactivate(self):
         self.is_active = False

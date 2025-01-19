@@ -10,11 +10,10 @@ admin.site.register(AccountManager)
 
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'plan','start_date', 'expire_date', 'is_active')  # Columns in the list view
+    list_display = ('id', 'user', 'plan','start_date', 'expire_date', 'is_active', 'get_remaining_days')  # Columns in the list view
     list_filter = ('is_active', 'plan', 'user', 'expire_date', 'start_date')  # Filters on the sidebar
     search_fields = ('user__username', 'plan')  # Searchable fields
-    ordering = ('expire_date',)  # Default ordering
-    readonly_fields = ('user',)  # Fields that cannot be edited
+    ordering = ('expire_date',)  # Default ordering 
     fieldsets = (
         (None, {
             'fields': ('user', 'expire_date', 'is_active')
@@ -24,6 +23,9 @@ class SubscriptionAdmin(admin.ModelAdmin):
             'fields': ('plan',)
         }),
     )
+    @admin.display(description='Remaining Days')
+    def get_remaining_days(self, obj):
+        return obj.remaining_days
 
 
 @admin.register(SubscriptionPlan)
