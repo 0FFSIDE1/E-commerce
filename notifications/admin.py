@@ -3,7 +3,7 @@ from .models import Notification
 from .tasks import update_notification_task, delete_notifications_task
 
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('notification_id', 'title', 'message', 'created_at', 'opened_at', 'status', 'customer')
+    list_display = ('created_at', 'notification_id', 'title', 'message', 'opened_at', 'status', 'customer')
 
     # Define the action to delete notifications older than 7 days
     actions = ['delete_old_notifications_action']

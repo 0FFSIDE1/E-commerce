@@ -1,4 +1,6 @@
 from django.contrib import admin
+
+from app.tasks import deactivate_expired_subscriptions
 from .models import AdminUser, OneTimePassword, AccountManager, Subscription, SubscriptionPlan
 # Register your models here.
 
@@ -23,6 +25,19 @@ class SubscriptionAdmin(admin.ModelAdmin):
             'fields': ('plan',)
         }),
     )
+    actions = ['validate_subscription']
+
+    def validate_subscription(self, request, queryset):
+
+        # schedule the task 
+        deactivate_expired_subscriptions.apply_async()
+        self.message_user(
+            request,
+            "Tasks to check if today matches expiring date of any subscription"
+        )
+    validate_subscription.short_description = "Check subscription is valid"
+
+
     @admin.display(description='Remaining Days')
     def get_remaining_days(self, obj):
         return obj.remaining_days
