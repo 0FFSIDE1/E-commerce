@@ -18,7 +18,7 @@ def generate_coupon_code(sender, instance, created, **kwargs):
         no = 'CDK12BXOEFLMNG4567HUVWYIQRS38JP90AT'
         no_list = [random.choice(no) for n in range(0,4)]
         code = ''.join(no_list) 
-        Coupon.objects.filter(pk=instance.pk).update(code=f"CLXNG-{code}")
+        Coupon.objects.filter(pk=instance.pk).update(code=f"AWOOF-{code}")
         
 
 
