@@ -16,7 +16,7 @@ class ProductReviewTestCase(TestCase):
         self.vendor = Vendor.objects.create(user=self.user, username='testvendor', brand_name='testvendor', first_name='testvendor', last_name='testvendor', phone='+1234567890', address='testaddress', category='Office Supplies', brand_type='Physical Store', email='testvendor@example.com', city='testcity', state='testsate', country='testcountyr')
 
         # Create test product
-        self.product = Product.objects.create(name='Test Product', quantity=10, price=100.00, category='Men', product_type='Men sets', brand="Test_brand", description="Test", vendor=self.vendor)
+        self.product = Product.objects.create(name='Test Product', quantity=10, price=100.00, category='Men', product_type='Men sets', description="Test", vendor=self.vendor)
         
         # Set up test client and login
         self.client = Client()

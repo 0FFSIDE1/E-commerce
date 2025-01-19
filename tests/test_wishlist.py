@@ -12,7 +12,7 @@ class WishlistTests(TestCase):
         self.client = Client()
         self.user = User.objects.create_user(username='testuser', email='testuser@example.com', password='password')
         self.vendor = Vendor.objects.create(user=self.user, username='testvendor', brand_name='testvendor', first_name='testvendor', last_name='testvendor', phone='+1234567890', address='testaddress', category='Office Supplies', brand_type='Physical Store', email='testvendor@example.com', city='testcity', state='testsate', country='testcountyr')
-        self.product = Product.objects.create(name='Test Product', quantity=10, price=100.00, category='Men', product_type='Men sets', brand="Test_brand", description="Test", vendor=self.vendor)
+        self.product = Product.objects.create(name='Test Product', quantity=10, price=100.00, category='Men', product_type='Men sets',  description="Test", vendor=self.vendor)
         self.add_to_wishlist_url = reverse('add-to-wishlist', kwargs={'pk': self.product.item_id})
         self.get_wishlist_url = reverse('get-wishlist')
         self.client.login(username='testuser', password='password')
@@ -24,7 +24,7 @@ class WishlistTests(TestCase):
     
     def test_get_wishlist(self):
         wishlist = Wishlist.objects.create(user=self.user)
-        product =  Product.objects.create(name='Test# Product', quantity=10, price=100.00, category='Men', product_type='Men sets', brand="Test_brand#", description="Test", vendor=self.vendor)
+        product =  Product.objects.create(name='Test# Product', quantity=10, price=100.00, category='Men', product_type='Men sets',description="Test", vendor=self.vendor)
         WishlistItem.objects.create(wishlist=wishlist, product=product)
 
         response = self.client.get(self.get_wishlist_url)

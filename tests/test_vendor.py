@@ -29,8 +29,8 @@ class VendorTests(TestCase):
         self.customer2 = Customer.objects.create(user=self.user2, first_name='Test2', last_name='User2', address='Test Address', phone='+254712345674', email='test_email2@gmail.com')
 
         # products
-        self.product1 = Product.objects.create(name='Test Product', quantity=10, price=100.00, category='Men', product_type='Men sets', brand="Test_brand1", description="Test", vendor=self.vendor)
-        self.product2 = Product.objects.create(name='Test Product2', quantity=10, price=100.00, category='Men', product_type='Men sets', brand="Test_brand2", description="Test", vendor=self.vendor2)
+        self.product1 = Product.objects.create(name='Test Product', quantity=10, price=100.00, category='Men', product_type='Men sets',  description="Test", vendor=self.vendor)
+        self.product2 = Product.objects.create(name='Test Product2', quantity=10, price=100.00, category='Men', product_type='Men sets', description="Test", vendor=self.vendor2)
 
         # cart and cart items
         self.cart = Cart.objects.create(customer=self.customer1)
