@@ -28,7 +28,7 @@ class Order(models.Model):
     
 
     def __str__(self):
-        return f"Order {self.order_id} by {self.customer.first_name} | {self.total_amount}"
+        return f"Order {self.order_id}"
     
 
 class OrderItem(models.Model):
