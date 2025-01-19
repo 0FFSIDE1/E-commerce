@@ -6,9 +6,6 @@ class CartItemInline(admin.TabularInline):
     model = CartItem
     extra = 0
 
-
-
-
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
     list_display = ('customer', 'total_amount', 'user', 'session', 'created_at', 'modified_at')  # Columns in the list view
