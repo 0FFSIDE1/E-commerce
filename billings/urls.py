@@ -4,6 +4,7 @@ from .views import *
 
 
 urlpatterns = [
-   # path('', view='your_view', name='reverse_name')
+   path('api/v1/initiate/payment', InitiatePaymentView.as_view(), name='initiate_payment'),
+   path('api/v1/verify/<str:ref>/payment', VerifyPaymentView.as_view(), name='verify-payment'),
     
 ]
