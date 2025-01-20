@@ -54,6 +54,7 @@ async def CreateCustomerView(request):
             user = await create_user(email, email, last_name)
             customer = await create_customer(user, first_name, last_name, address, phone, email, city, country)
             # await authenticate_user(request=request, username=email, password=last_name)
+            
             return JsonResponse({'success': True, 'message': 'Customer created successfully!'}, safe=True, status=200)
 
         if await check_customer_exists(email):

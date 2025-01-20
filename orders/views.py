@@ -38,17 +38,13 @@ def UpdateOrderView(request, pk):
                 order.status = status
                 context_data = context(order=order)
                 if status == 'Pending':
-                    result = admin_send_email.delay(context=context_data, to_email=order.customer.email, subject=f'Order Processing: # {order.order_id}', body='emails/order_pending.html')
-                    
+                    result = admin_send_email.delay(context=context_data, to_email=order.customer.email, subject=f'Order Processing: # {order.order_id}', body='emails/order_pending.html')  
                 if status == 'Paid':
                     result = admin_send_email.delay(context=context_data, to_email=order.customer.email, subject=f'Payment Receipt #{order.order_id}', body='emails/payment_success.html')
-            
                 if status == 'Shipped':
                     result = admin_send_email.delay(context=context_data, to_email=order.customer.email, subject=f'Order {status}: #{order.order_id}', body='emails/order_shipped.html')
-                
                 if status == 'Delivered':
                     result = admin_send_email.delay(context=context_data, to_email=order.customer.email, subject=f'Order {status}: #{order.order_id}', body='emails/order_delivered.html')
-                
                 if status == 'Cancelled':
                     result = admin_send_email.delay(context=context_data, to_email=order.customer.email, subject=f'Order {status}: #{order.order_id}', body='emails/order_cancelled.html')
                 

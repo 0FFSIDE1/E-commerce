@@ -32,7 +32,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
         # schedule the task 
         deactivate_expired_subscriptions.apply_async()
         self.message_user(
-            request,
+            request, 
             "Tasks to check if today matches expiring date of any subscription"
         )
     validate_subscription.short_description = "Check subscription is valid"
