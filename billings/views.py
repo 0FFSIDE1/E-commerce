@@ -54,7 +54,7 @@ class InitiatePaymentView(APIView):
                 'message': 'Payment Initiated successfully'
             }
             print(context)
-            return render(request, 'app/make_payment.html', context)
+            return render(request, 'app/make_payment.html', context, status=201)
 
         except json.JSONDecodeError:
             logger.error("Invalid JSON in request body.", exc_info=True)
