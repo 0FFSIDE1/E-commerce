@@ -36,7 +36,7 @@ class Payment(models.Model):
     def save(self, *args, **kwargs):
         if not self.ref:
             ref = uuid.uuid4()
-            object_with_similair_ref = Payment.objects.filter(ref=ref)
+            object_with_similair_ref  = Payment.objects.filter(ref=ref)
             if not object_with_similair_ref:
                 self.ref = ref
 
@@ -50,11 +50,16 @@ class Payment(models.Model):
         status, result = paystack.verify_payment(self.ref, self.amount)
         if status:
             if result['amount'] / 100 == self.amount:
-                self.verified == True
+                self.verified = True
             self.save()
         
-        if self.verified:
-            return True
-        return False
+        return self.verified
 
 
+# {
+#     "success": true,
+#     "payment_id": "af43af00-8dd0-4066-97ca-1a0d1e643129",
+#     "paystack_public_key": "pk_test_dac763da27d5983086654785ad96c645c7fa3948",
+#     "amount_value": 100000,
+#     "message": "Payment Initiated successfully"
+# }

@@ -12,12 +12,14 @@ from django.db import transaction
 logger = logging.getLogger(__name__)
 
 class InitiatePaymentView(APIView):
+    def get(self, request):
+        return render(request, 'app/payment.html')
     def post(self, request):
         try:
             # Parse and validate request body
-            data = json.loads(request.body)
+            data = request.data
             email = data.get('email')
-            amount = data.get('amount')
+            amount = float(data.get('amount'))
             
             if not email or not amount:
                 return Response(
@@ -46,13 +48,13 @@ class InitiatePaymentView(APIView):
             # Prepare response context
             context = {
                 "success": True,
-                "payment_id": payment.payment_id,  # Use ID instead of exposing full object
+                "payment": payment, 
                 "paystack_public_key": pk,
                 "amount_value": payment.amount_value(),
                 'message': 'Payment Initiated successfully'
             }
             print(context)
-            return Response(context, status=status.HTTP_201_CREATED)
+            return render(request, 'app/make_payment.html', context)
 
         except json.JSONDecodeError:
             logger.error("Invalid JSON in request body.", exc_info=True)

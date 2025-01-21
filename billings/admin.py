@@ -11,7 +11,7 @@ class PaymentAdmin(admin.ModelAdmin):
     readonly_fields = ('order_id',)  
     fieldsets = (
         (None, {
-            'fields': ('order_id', 'order', 'amount', 'status', 'verified')
+            'fields': ('order', 'amount', 'status', 'verified','ref', 'user')
         }),
         
     )
