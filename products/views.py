@@ -238,7 +238,7 @@ def VendorProducts(request):
 def AllProducts(request):
     try: 
         # Retrieve all products
-        products = Product.objects.all()
+        products = Product.objects.filter(vendor__is_active=True)
 
         # Get page number from query parameters
         page_number = request.GET.get('page', 1)  # Default to page 1
