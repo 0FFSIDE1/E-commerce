@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from sellers.models import Vendor
+from services.serializers.product import ProductSerializer
 from services.utils.cloudinary import upload_image, get_image_urls
 import asyncio
 from products.models import Product
@@ -274,6 +275,38 @@ def AllProducts(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+
+@require_http_methods(["GET"])
+def ProductsForAVendorCustomerView(request, vendor):
+    try:
+        products = Product.objects.get(vendor=vendor)
+
+         # Get page number from query parameters
+        page_number = request.GET.get('page', 1)  # Default to page 1
+    
+        # Create a Paginator instance
+        paginator = Paginator(products, 15) # showing 15 per page
+
+        # Get the requested page of products
+        page_obj = paginator.get_page(page_number)
+
+        serializer = ProductSerializer(products, many=True)
+        response = {
+            "products": serializer.data,
+            "total_pages": paginator.num_pages,
+            "current_page": page_obj.number,
+            "total_products": paginator.count,
+            "has_next": page_obj.has_next(),
+            "has_previous": page_obj.has_previous(),
+        }
+
+        return JsonResponse(response, safe=False, status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
         
 
 
