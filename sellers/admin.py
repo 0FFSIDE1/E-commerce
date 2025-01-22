@@ -5,7 +5,7 @@ from .models import Vendor
 
 @admin.register(Vendor)
 class VendorAdmin(admin.ModelAdmin):
-    list_display = ('created_at', 'username', 'first_name', 'last_name', 'brand_name', 'phone', 'category') 
+    list_display = ('created_at', 'username', 'first_name', 'last_name', 'brand_name', 'phone', 'category', 'is_active') 
     list_filter = ('created_at', )  
     search_fields = ('email', 'username', 'brand_name', 'first_name', 'last_name')
     ordering = ('id',)
