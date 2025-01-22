@@ -15,7 +15,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'plan','start_date', 'expire_date', 'is_active', 'get_remaining_days')  # Columns in the list view
     list_filter = ('is_active', 'plan', 'user', 'expire_date', 'start_date')  # Filters on the sidebar
     search_fields = ('user__username', 'plan')  # Searchable fields
-    ordering = ('expire_date',)  # Default ordering 
+    ordering = ('id',)  # Default ordering 
     fieldsets = (
         (None, {
             'fields': ('user', 'expire_date', 'is_active')
@@ -45,14 +45,14 @@ class SubscriptionAdmin(admin.ModelAdmin):
 
 @admin.register(SubscriptionPlan)
 class SubscriptionPlanAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'price', 'duration_in_days',) 
-    list_filter = ('name', 'price', )  
-    search_fields = ('name', 'price')
+    list_display = ('id', 'name', 'price', 'duration_in_days', 'sub_code') 
+    list_filter = ('name',)  
+    search_fields = ('name', )
     ordering = ('id',)  
     readonly_fields = ('id',)  
     fieldsets = (
         (None, {
-            'fields': ('name', 'price', 'description', 'duration_in_days')
+            'fields': ('name', 'price', 'description', 'duration_in_days', 'sub_code')
         }),
         
     )

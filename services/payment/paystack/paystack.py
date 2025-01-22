@@ -23,8 +23,31 @@ class Paystack:
             return response_data['status'], response_data['data']
         
         response_data =  response.json()
+        print(response_data)
 
         return response_data['status'], response_data['message']
+    
+    def verify_subscription(self, ref, *args, **kwargs):
+        path = f"subscription/{ref}"
+        headers = {
+            "Authorization": f"Bearer {self.PAYSTACK_SK}",
+            "Content-Type": "application/json",
+        }
+        url = self.base_url + path
+        response = requests.get(url, headers=headers)
+        print(
+			f"\n\nSubscription with ref: {ref} has a response {response} and status_code of {response.status_code}\n\n")
+        
+        if response.status_code == 200:
+            response_data = response.json()
+            return response_data['status'], response_data['data']
+        
+        response_data =  response.json()
+        print(response_data)
+
+        return response_data['status'], response_data['message']
+        
+
     
 
         

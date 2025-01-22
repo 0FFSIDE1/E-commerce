@@ -42,6 +42,7 @@ class SubscriptionPlan(models.Model):
     description = models.TextField(null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     duration_in_days = models.PositiveIntegerField(default=None, blank=False, null=False)  # Duration of the plan
+    sub_code = models.CharField(max_length=50, default=None, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -62,7 +63,7 @@ class Subscription(models.Model):
         if self.expire_date:
             remaining = (self.expire_date - date.today()).days
             return max(remaining, 0)  # Return 0 if the subscription has expired
-        return "No Expiration Date"
+        return None
 
 
     def deactivate(self):
