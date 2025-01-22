@@ -10,6 +10,9 @@ def generate_end_date(sender, instance, created, **kwargs):
     remaining_sub_days = 0
     if created:
         old_subscriptions = Subscription.objects.filter(user=instance.user, is_active=True)
+        vendor = instance.user
+        vendor.is_active = True
+        vendor.save()
        
         for sub in old_subscriptions:
             sub.is_active = False
