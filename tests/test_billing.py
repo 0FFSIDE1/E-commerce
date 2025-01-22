@@ -39,8 +39,8 @@ class PaymentViewTestCase(TestCase):
 
     #     self.assertEqual(response.status_code, 201)
     #     self.assertTrue(response.json()["success"])
-    #     self.assertIn("paystack_pub_key", response.json())
-    #     self.assertEqual(response.json()["paystack_pub_key"], settings.PAYSTACK_PUBLIC_KEY)
+    #     self.assertIn("paystack_public_key", response.json())
+    #     self.assertEqual(response.json()["ppaystack_public_key"], settings.PAYSTACK_PUBLIC_KEY)
 
     def test_initiate_payment_invalid_data(self):
         """Test payment initiation with invalid data."""

@@ -54,6 +54,14 @@ class Payment(models.Model):
             self.save()
         
         return self.verified
+    
+    def verify_subscription(self):
+        paystack = Paystack()
+        status, result = paystack.verify_subscription(self.ref, self.amount)
+        if status:
+            if result['amount'] / 100 == self.amount:
+                self.verified = True
+            self.save()
 
 
 # {
