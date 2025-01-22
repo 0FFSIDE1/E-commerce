@@ -10,4 +10,8 @@ urlpatterns = [
       path('api/v1/order/<int:pk>/review', OrderReviewDetail, name='order-review-detail'),
       path('api/v1/vendor/<str:pk>/review/create', CreateVendorReview, name='vendor-review'),
       path('api/v1/vendor/<int:pk>/review', VendorReviewDetail, name='vendor-review-detail'),
+      path('api/v1/vendor/reviews', GetAllReviewsForAVendor, name='all-vendor-reviews'),
+      path('api/v1/product/reviews', GetAllReviewsForAProduct, name='all-product-reviews'),
+
 ]
+

@@ -62,6 +62,30 @@ def ProductReviewDetail(request, pk):
         }
         return JsonResponse(context, safe=True)
 
+
+@require_http_methods(["GET"]) 
+def GetAllReviewsForAProduct(request, pk):
+    try:
+        product = Product.objects.get(item_id=pk)
+        product_review = ProductReview.objects.filter(product=product)
+        serializer = ProductReviewSerializer(product_review, many=True)
+        context = {
+            'success': True,
+            'message': 'Product review retrieved successfully',
+            'product_reviews': serializer.data,
+        }
+        return JsonResponse(context, safe=True, status=200)
+    
+    except Exception as e: 
+
+        context = {
+            'success': False,
+            'messsage': f'Error retrieveing Product review {e}'
+        }
+        return JsonResponse(context, safe=True, status=400)
+
+
+
 @login_required
 @require_http_methods(["POST"])
 def CreateOrderReview(request, pk):
@@ -105,6 +129,8 @@ def OrderReviewDetail(request, pk):
             'message': f'Error retriving review {e}',
         }
         return JsonResponse(context, safe=True)
+
+
 
 @login_required
 @require_http_methods(["POST"])
@@ -150,3 +176,25 @@ def VendorReviewDetail(request, pk):
             'message': f'Error retriving review {e}',
         }
         return JsonResponse(context, safe=True)
+    
+
+@require_http_methods(["GET"]) 
+def GetAllReviewsForAVendor(request, pk):
+    try:
+        vendor = Vendor.objects.get(vendor_id=pk)
+        vendor_review = ProductReview.objects.filter(vendor=vendor)
+        serializer = VendorReviewSerializer(vendor_review, many=True)
+        context = {
+            'success': True,
+            'message': 'All vendor review retrieved successfully',
+            'vendor_reviews': serializer.data,
+        }
+        return JsonResponse(context, safe=True, status=200)
+    
+    except Exception as e: 
+
+        context = {
+            'success': False,
+            'messsage': f'Error retrieveing Vendor review {e}'
+        }
+        return JsonResponse(context, safe=True, status=400)
