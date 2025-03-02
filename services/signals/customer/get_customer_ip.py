@@ -17,3 +17,4 @@ def set_customer_ip(sender, instance, created, **kwargs):
             instance.ip_address = ip
             instance.save()
 
+# This signal is triggered when a new Customer is created. If the Customer is created without an IP address, the IP address is set to the Customer's ip_address field. The IP address is extracted from the current request object using the get_current_request() function from the middleware module. The IP address is then saved to the Customer's ip_address field and the instance is saved. This ensures that the IP address is associated with the Customer when it is created.  
