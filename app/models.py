@@ -70,5 +70,34 @@ class Subscription(models.Model):
         self.is_active = False
         self.save()
 
+class AffiliateMarketer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='affiliate')
+    affiliate_id = models.CharField(max_length=10, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.affiliate_id}"
+    
+class Referral(models.Model):
+    affiliate = models.ForeignKey(AffiliateMarketer, on_delete=models.CASCADE, related_name='referrals')
+    referred_vendor = models.OneToOneField(Vendor, on_delete=models.CASCADE, related_name='referral')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.affiliate.user.username} -> {self.referred_vendor.username}"
+    
+class Commission(models.Model):
+    affiliate = models.ForeignKey(AffiliateMarketer, on_delete=models.CASCADE, related_name='commissions')
+    referral = models.ForeignKey(Referral, on_delete=models.CASCADE, related_name='commission')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date_earned = models.DateTimeField(auto_now_add=True)
+    is_paid = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.affiliate.user.username} - ${self.amount}"
+
+    
+
     
         

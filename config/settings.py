@@ -84,10 +84,12 @@ INSTALLED_APPS = [
     'app',
     'coupons',
     'wishlist',
+    'waitlist',
 
     # Third-Party Libraries
     'phonenumber_field',
     'rest_framework',
+    "drf_yasg",
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
     'celery',
@@ -149,7 +151,7 @@ MIDDLEWARE = [
 
     # third party middleware
     'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware', 
+    
 ]
 
 ROOT_URLCONF = 'config.urls'
