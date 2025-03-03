@@ -4,6 +4,8 @@ from waitlist.models import Waitlist
 from services.serializers.waitlist import WaitlistVendorSerializer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from rest_framework.response import Response
+from rest_framework import status
 
 # Create your views here.
 class WaitlistVendors(generics.CreateAPIView):
@@ -12,8 +14,9 @@ class WaitlistVendors(generics.CreateAPIView):
     @swagger_auto_schema(
         operation_description="Add a vendor to the waitlist",
         request_body=WaitlistVendorSerializer,
+        tags=['Waitlist'],
         responses={
-            201: WaitlistVendorSerializer(),
+            201: 'Thank you for your Interest.',
             400: "Bad Request - Invalid input data",
             422: "Unprocessable Entity",
             500: "Internal Server Error",
