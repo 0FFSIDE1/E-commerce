@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% load static %}
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+  <meta name="description" content=""/>
+  <meta name="author" content=""/>
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>Dashtreme Admin</title>
+ 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <!-- loader-->
+  <link href="{% static "app/assets/css/pace.min.css" %}" rel="stylesheet"/>
+  <script src="{% static "app/assets/js/pace.min.js" %}"></script>
+  <!--favicon-->
+  <link rel="icon" href="{% static "app/assets/images/favicon.ico" %}" type="image/x-icon">
+  <!-- Bootstrap core CSS-->
+  <link href="{% static "app/assets/css/bootstrap.min.css" %}" rel="stylesheet"/>
+  
+  <!-- animate CSS-->
+  <link href="{% static "app/assets/css/animate.css" %}" rel="stylesheet" type="text/css"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Icons CSS-->
+  <link href="{% static "app/assets/css/icons.css" %}" rel="stylesheet" type="text/css"/>
+  <!-- Custom Style-->
+  <link href="{% static "app/assets/css/app-style.css" %}" rel="stylesheet"/>
+
+
+  
+</head>
+
+<body class="bg-theme bg-theme13">
+  <div class="toast-container position-fixed top-0 end-0 p-3 ">
+    <div id="cart-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="color: white;">
+        <div class="toast-header">
+            <strong class="me-auto">Info</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" style="color: white;">
+            
+        </div>
+    </div>
+</div>
+
+<!-- start loader -->
+   <div id="pageloader-overlay" class="visible incoming"><div class="loader-wrapper-outer"><div class="loader-wrapper-inner" ><div class="loader"></div></div></div></div>
+   <!-- end loader -->
+
+<!-- Start wrapper-->
+ <div id="wrapper">
+ 
+
+	<div class="card card-authentication1 mx-auto my-4">
+		<div class="card-body">
+		 <div class="card-content p-2">
+		 	<div class="text-center">
+		 		{% comment %} <img src="assets/images/logo-icon.png" alt="logo icon"> {% endcomment %}
+        <h2> ALABALINE.COM</h2>
+		 	</div>
+		  <div class="card-title text-uppercase text-center py-3">Sign Up</div>
+		    <form id="RegisterVendorForm">
+          <div class="form-group">
+            <label for="exampleInputName" class="sr-only">Username</label>
+             <div class="position-relative has-icon-right">
+              <input type="text" id="username" class="form-control input-shadow" placeholder="Enter Your Username" required name="username">
+              <div class="form-control-position">
+                <i class="icon-user"></i>
+              </div>
+             </div>
+            </div>
+          <div class="form-group">
+            <label for="exampleInputName" class="sr-only">First Name</label>
+             <div class="position-relative has-icon-right">
+              <input type="text" id="first_name" class="form-control input-shadow" placeholder="Enter Your First Name" required name="first_name">
+              <div class="form-control-position">
+                <i class="icon-user"></i>
+              </div>
+             </div>
+            </div>
+			  <div class="form-group">
+			  <label for="exampleInputName" class="sr-only">Last Name</label>
+			   <div class="position-relative has-icon-right">
+				  <input type="text" id="last_name" class="form-control input-shadow" placeholder="Enter Your Last Name" required name="last_name">
+				  <div class="form-control-position">
+					  <i class="icon-user"></i>
+				  </div>
+			   </div>
+			  </div>
+        <div class="form-group">
+          <label for="exampleInputName" class="sr-only">Brand Name</label>
+           <div class="position-relative has-icon-right">
+            <input type="text" id="brand_name" class="form-control input-shadow" placeholder="Your Brand Name" required name="brand_name">
+            <div class="form-control-position">
+              {% comment %} <i class="icon-user"></i> {% endcomment %}
+            </div>
+           </div>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputName" class="sr-only">Category</label>
+             <div class="position-relative has-icon-right">
+              <input type="text" id="category" list="category" class="form-control input-shadow" placeholder="Category" required name="category">
+              <datalist id="category">
+                <option value="Electrical & Electronics"></option>
+                <option value="Fashion & Clothing"></option>
+                <option value="Home & Furniture"></option>
+                <option value="Beauty & Health"></option>
+                <option value="Sports & Outdoors"></option>
+                <option value="Books & Stationery"></option>
+                <option value="Food & Beverages"></option>
+                <option value="Automotive"></option>
+                <option value="Toys & Baby Products"></option>
+                <option value="Jewelry & Accessories"></option>
+                <option value="Pet Supplies"></option>
+                <option value="Music & Instruments"></option>
+                <option value="Gaming"></option>
+                <option value="Office Supplies"></option>
+                <option value="Garden & Outdoors"></option>
+                <option value="Medical & Healthcare"></option>
+                <option value="Travel & Luggage"></option>
+                <option value="Industrial & Scientific"></option>
+                <option value="Arts & Crafts"></option>
+                <option value="Software & Apps"></option>
+                <option value="Entertainment & Media"></option>
+                <option value="Digital Products"></option>
+                <option value="Ligthings & Chandelier"></option>
+                </datalist>
+              <div class="form-control-position">
+                {% comment %} <i class="icon-user"></i> {% endcomment %}
+              </div>
+             </div>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputName" class="sr-only">Type</label>
+               <div class="position-relative has-icon-right">
+                <input type="text" id="type" list="store_type" class="form-control input-shadow" placeholder="Store Type" required name="brand_type">
+                <datalist id="store_type">
+                  <option value="Online Store">
+                  <option value="Physical Store">
+                  <option value="Online & Physical Store">
+                  </datalist>
+                <div class="form-control-position">
+                  {% comment %} <i class="icon-user"></i> {% endcomment %}
+                </div>
+               </div>
+              </div>
+
+			  <div class="form-group">
+			  <label for="exampleInputEmailId" class="sr-only">Email</label>
+			   <div class="position-relative has-icon-right">
+				  <input type="email" id="email" class="form-control input-shadow" placeholder="youremailaddress@example.com" required name="email">
+				  <div class="form-control-position">
+					  <i class="icon-envelope"></i>
+				  </div>
+			   </div>
+			  </div>
+        <div class="form-group">
+          <label for="exampleInputName" class="sr-only">Phone</label>
+           <div class="position-relative has-icon-right">
+            <input type="tel" id="phone" class="form-control input-shadow" required name="phone" placeholder="+23490547XXXXX" pattern="^\+?[1-9]\d{1,14}$" title="Enter a valid international phone number">
+
+            <div class="form-control-position">
+              <i class="icon-phone"></i>
+            </div>
+           </div>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputName" class="sr-only">Address</label>
+             <div class="position-relative has-icon-right">
+              <input type="address" id="address" class="form-control input-shadow" placeholder="Address" required name="address">
+              <div class="form-control-position">
+                <i class="icon-home"></i>
+              </div>
+             </div>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputName" class="sr-only">City</label>
+               <div class="position-relative has-icon-right">
+                <input type="text" id="city" required name="city" class="form-control input-shadow" placeholder="LGA">
+                <div class="form-control-position">
+                  <i class="icon-home"></i>
+                </div>
+               </div>
+              </div>
+              <div class="form-group">
+                <label for="exampleInputName" class="sr-only">State</label>
+                 <div class="position-relative has-icon-right">
+                  <input type="text" id="state" class="form-control input-shadow" required placeholder="State" name="state">
+                  <div class="form-control-position">
+                    <i class="icon-home"></i>
+                  </div>
+                 </div>
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputName" class="sr-only">Country</label>
+                   <div class="position-relative has-icon-right">
+                    <input type="text" id="country" class="form-control input-shadow" placeholder="Country" required name="country">
+                    <div class="form-control-position">
+                      {% comment %} <i class="icon-user"></i> {% endcomment %}
+                    </div>
+                   </div>
+                  </div>
+			  <div class="form-group">
+			   <label for="exampleInputPassword" class="sr-only">Password</label>
+			   <div class="position-relative has-icon-right">
+				  <input type="password" id="exampleInputPassword" class="form-control input-shadow" required name="password" placeholder="Choose Password">
+				  <div class="form-control-position">
+					  <i class="icon-lock"></i>
+				  </div>
+			   </div>
+			  </div>
+			  
+			   <div class="form-group">
+			     <div class="icheck-material-white">
+                   <input type="checkbox" id="user-checkbox" checked="" />
+                   <label for="user-checkbox">I Agree With Terms & Conditions</label>
+			     </div>
+			    </div>
+			  
+			 <button type="submit" class="btn btn-light btn-block waves-effect waves-light">Sign Up</button>
+			  {% comment %} <div class="text-center mt-3">Sign Up With</div>
+			  
+			 <div class="form-row mt-4">
+			  <div class="form-group mb-0 col-6">
+			   <button type="button" class="btn btn-light btn-block"><i class="fa fa-facebook-square"></i> Facebook</button>
+			 </div>
+			 <div class="form-group mb-0 col-6 text-right">
+			  <button type="button" class="btn btn-light btn-block"><i class="fa fa-twitter-square"></i> Twitter</button>
+			 </div>
+			</div> {% endcomment %}
+			
+			 </form>
+		   </div>
+		  </div>
+		  <div class="card-footer text-center py-3">
+		    <p class="text-warning mb-0">Already have an account? <a href="{% url "login-vendor" %}"> Sign In here</a></p>
+		  </div>
+	     </div>
+    
+     <!--Start Back To Top Button-->
+    <a href="javaScript:void();" class="back-to-top"><i class="fa fa-angle-double-up"></i> </a>
+    <!--End Back To Top Button-->
+	
+	<!--start color switcher-->
+   <div class="right-sidebar">
+    <div class="switcher-icon">
+      <i class="zmdi zmdi-settings zmdi-hc-spin"></i>
+    </div>
+    <div class="right-sidebar-content">
+
+      <p class="mb-0">Gaussion Texture</p>
+      <hr>
+      
+      <ul class="switcher">
+        <li id="theme1"></li>
+        <li id="theme2"></li>
+        <li id="theme3"></li>
+        <li id="theme4"></li>
+        <li id="theme5"></li>
+        <li id="theme6"></li>
+      </ul>
+
+      <p class="mb-0">Gradient Background</p>
+      <hr>
+      
+      <ul class="switcher">
+        <li id="theme7"></li>
+        <li id="theme8"></li>
+        <li id="theme9"></li>
+        <li id="theme10"></li>
+        <li id="theme11"></li>
+        <li id="theme12"></li>
+		<li id="theme13"></li>
+        <li id="theme14"></li>
+        <li id="theme15"></li>
+      </ul>
+      
+     </div>
+   </div>
+  <!--end color switcher-->
+	
+	</div><!--wrapper-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> 
+	
+  <!-- Bootstrap core JavaScript-->
+  <script src="{% static "app/assets/js/jquery.min.js" %}"></script>
+  <script src="{% static "app/assets/js/popper.min.js" %}"></script>
+  <script src="{% static "app/assets/js/bootstrap.min.js" %}"></script>
+ 
+	
+  <!-- sidebar-menu js -->
+  <script src="{% static "app/assets/js/sidebar-menu.js" %}"></script>
+  
+  <!-- Custom scripts -->
+  <script src="{% static "app/assets/js/app-script.js" %}"></script>
+  <script src="{% static "app/assets/js/custom.js" %}"></script>
+  
+</body>
+</html>
