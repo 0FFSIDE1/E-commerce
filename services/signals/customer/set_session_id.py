@@ -13,3 +13,5 @@ def set_session_id(sender, instance, created, **kwargs):
         session_id = request.session.session_key
         instance.session = session_id
         instance.save()
+
+# This signal is triggered when a new Customer is created. If the Customer is created without a user, the session ID is set to the Customer's session field. The session ID is retrieved from the current request object using the get_current_request() function from the middleware module. If the session ID does not exist, a new session is created using the create() method. The session ID is then saved to the Customer's session field and the instance is saved. This ensures that the session ID is associated with the Customer when it is created.
