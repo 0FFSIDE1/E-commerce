@@ -6,7 +6,7 @@ function NavBar() {
   const navigate = useNavigate();
 
   return (
-    <nav className=" sticky ring-black bg-gradient-to-r from-[#efe2e5] to-[#f38cb7]  transition-all duration-700 ease-in-out text-gray-800 shadow-md flex flex-col sm:flex-row items-center justify-between py-4 px-6">
+    <nav className=" sticky ring-black bg-gradient-to-r from-[#efe2e5] to-white  transition-all duration-700 ease-in-out text-gray-800 shadow-md flex flex-col sm:flex-row items-center justify-between py-4 px-6">
       {/* Logo */}
       <div
         className="font-extrabold text-2xl sm:text-3xl cursor-pointer hover:text-gray-600 text-red-900"

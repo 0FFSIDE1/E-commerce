@@ -4,6 +4,7 @@ import Register from "../pages/Register"
 import Productpage from "../pages/Productpage"
 import VendorPage from "../pages/VendorPage"
 import Cart from "../pages/Cart"
+import Waitlist from "../pages/Waitlist"
 import ProtectiveRoute from "./ProtectiveRoute"
 
 
@@ -29,6 +30,10 @@ const routes = createBrowserRouter([
         path:"/cart",
         element:<Cart/>
     },
+    {
+        path:"/waitlist",
+        element:<Waitlist/>
+    }
 
 ])
 
