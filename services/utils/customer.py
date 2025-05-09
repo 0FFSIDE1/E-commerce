@@ -36,14 +36,14 @@ def get_customer(user, session):
 
 
 @sync_to_async
-def create_customer(user, first_name, last_name, address, phone, email, city, country):
+def create_customer(user, full_name, address, phone, email, city, country):
     """
     Create a customer
 
     Args:
         user: for authenticated users.
-        first_name: first name of the customer.
-        last_name: last name of the customer.
+        full_name: first name of the customer.
+        
         address: address of the customer.
         phone: phone number of the customer.
         email: email address of the customer.
@@ -55,13 +55,13 @@ def create_customer(user, first_name, last_name, address, phone, email, city, co
         ValueError: If user is not provided.
     """
     if user is not None:
-        customer = Customer.objects.create(user=user, first_name=first_name, last_name=last_name, address=address, phone=phone, email=email, city=city, country=country)
+        customer = Customer.objects.create(user=user, full_name=full_name, address=address, phone=phone, email=email, city=city, country=country)
     
         return customer
 
     try:
         # Create a customer for a specific user
-        customer = Customer.objects.create(first_name=first_name, last_name=last_name, address=address, phone=phone, email=email, city=city, country=country)
+        customer = Customer.objects.create(full_name=full_name, address=address, phone=phone, email=email, city=city, country=country)
         
         return customer
     except Exception as e:
@@ -87,13 +87,13 @@ def check_customer_exists(email):
     
     
 @sync_to_async
-def update_customer(session, first_name, last_name, address, phone, email, city, country):
+def update_customer(session, full_name, address, phone, email, city, country):
     """
     Update customer details
 
     Args:
-        first_name: First name of the customer.
-        last_name: Last name of the customer.
+        full_name: First name of the customer.
+        
         address: Address of the customer.
         phone: Phone number of the customer.
         email: Email address of the customer.
@@ -106,8 +106,7 @@ def update_customer(session, first_name, last_name, address, phone, email, city,
     try:
         customer = Customer.objects.get(email=email)
         customer.session = session
-        customer.first_name = first_name
-        customer.last_name = last_name
+        customer.full_name = full_name
         customer.address = address
         customer.phone = phone
         customer.city = city
@@ -120,8 +119,7 @@ def update_customer(session, first_name, last_name, address, phone, email, city,
 @sync_to_async
 def get_customer_details(customer):
     customer_data = {
-                'first_name': customer.first_name,
-                'last_name': customer.last_name,
+                'full_name': customer.full_name,
                 'email': customer.email,
                 'phone': str(customer.phone),
                 'address': customer.address,
