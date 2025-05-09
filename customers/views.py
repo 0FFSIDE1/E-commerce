@@ -35,8 +35,8 @@ async def CreateCustomerView(request):
     try:
         data = json.loads(request.body)
        
-        first_name = data.get('first_name')
-        last_name = data.get('last_name')
+        full_name = data.get('full_name')
+        
         email = data.get('email')
         phone = data.get('phone')
         address = data.get('address')
@@ -46,22 +46,21 @@ async def CreateCustomerView(request):
 
         if create_account:
             if await check_user_exists(email):
-                customer = await update_customer(request.session.session_key, first_name, last_name, address, phone, email, city, country)
+                customer = await update_customer(session=request.session.session_key, full_name=full_name, address=address, phone=phone, email=email, city=city, country=country)
                 return JsonResponse({'success': True, 'message': 'Customer updated successfully!'}, safe=True, status=200)
             if await check_customer_exists(email):
-                customer = await update_customer(request.session.session_key, first_name, last_name, address, phone, email, city, country, )
+                customer = await update_customer(session=request.session.session_key, full_name=full_name, address=address, phone=phone, email=email, city=city, country=country,)
                 return JsonResponse({'success': True, 'message': 'Customer updated successfully!'}, safe=True, status=200)
-            user = await create_user(email, email, last_name)
-            customer = await create_customer(user, first_name, last_name, address, phone, email, city, country)
+            user = await create_user(email, email, full_name)
+            customer = await create_customer(user, full_name, address, phone, email, city, country)
             # await authenticate_user(request=request, username=email, password=last_name)
-            
             return JsonResponse({'success': True, 'message': 'Customer created successfully!'}, safe=True, status=200)
 
         if await check_customer_exists(email):
-            customer = await update_customer(request.session.session_key, first_name, last_name, address, phone, email, city, country)
+            customer = await update_customer(session=request.session.session_key, full_name=full_name, address=address, phone=phone, email=email, city=city, country=country)
             return JsonResponse({'success': True, 'message': 'Customer updated successfully!'}, safe=True, status=200)
         else:
-            customer = await create_customer(None, first_name, last_name, address, phone, email, city, country)
+            customer = await create_customer(None, full_name, address, phone, email, city, country)
             return JsonResponse({'success': True, 'message': 'Customer created successfully!'}, safe=True, status=200)
 
     except IntegrityError as e:
@@ -89,8 +88,7 @@ def GetCustomer(request):
     if customer:
         customer_data = {
             'id': customer.customer_id,
-            'first_name': customer.first_name,
-            'last_name': customer.last_name,
+            'full_name': customer.full_name,
             'address': customer.address,
             'city': customer.city,
             'country': customer.country,
