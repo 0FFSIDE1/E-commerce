@@ -1,45 +1,37 @@
 from carts.models import Cart
-from customers.models import Customer
 from asgiref.sync import sync_to_async
+from django.contrib.auth.models import AnonymousUser
 
 
 @sync_to_async
-def get_cart(user, session):
+def get_cart(user=None, session=None):
     """
-    Retrieve or create a cart for a customer or an anonymous user.
+    Retrieve or create a cart for a logged-in user or an anonymous session.
 
     Args:
-        user: The HTTP request object (used for anonymous users).
-        session: A Customer object (used for logged-in users).
+        user (User): The authenticated user object (None if the user is anonymous).
+        session (str): The session ID for an anonymous user.
 
     Returns:
-        Cart object for the specified customer or session.
+        Cart: The existing or newly created cart object.
 
     Raises:
-        ValueError: If neither request nor customer is provided.
+        ValueError: If neither 'user' nor 'session' is provided.
     """
     if not user and not session:
-        raise ValueError("Either 'request' or 'customer' must be provided to retrieve or create a cart.")
+        raise ValueError("Either 'user' or 'session' must be provided to retrieve or create a cart.")
+    
+    if user and isinstance(user, AnonymousUser):  # Handle anonymous users properly
+        user = None
 
-    try:
-        
-        cart, created = Cart.objects.get(user=user)
-       
+    if user:
+        # Retrieve or create a cart for a logged-in user
+        cart, created = Cart.objects.get_or_create(user=user)
         return cart
 
-    except Exception as e:
-        # Retrieve or create a cart for a anonymous user, session_id is being controlled by signal
-        cart = Cart.objects.get_or_create(session=session)
-
-        return cart[0]
-    except Cart.DoesNotExist:
-        # Retrieve or create a cart for a anonymous user, session_id is being controlled by signal
-        # customer = Customer.objects.get(session=session)
-        # cart = Cart.objects.get(customer=customer.session)
-        cart = Cart.objects.get_or_create(session=session)
-
-
-        return cart[0]
+    # Retrieve or create a cart for an anonymous user (session-based)
+    cart, created = Cart.objects.get_or_create(session=session)
+    return cart
     
    
 
@@ -56,9 +48,9 @@ def get_cart_by_customer(customer):
 def get_cart_by_session(session_key):
     """This function gets or create cart based on a session for anonymous user"""
     
-    cart = Cart.objects.get_or_create(session=session_key)
+    cart, created = Cart.objects.get_or_create(session=session_key)
     
-    return cart[0]
+    return cart
 
 
 @sync_to_async
@@ -91,3 +83,42 @@ def clear_cart(cart):
     data = 'Cart Cleared'
     return data
 
+
+
+from django.db import transaction
+from carts.models import Cart, CartItem
+from products.models import Product
+
+def get_or_create_cart(user=None, session_id=None, customer=None):
+    if user and user.is_authenticated:
+        cart, _ = Cart.objects.get_or_create(user=user, defaults={"customer": customer})
+    elif session_id:
+        cart, _ = Cart.objects.get_or_create(session=session_id)
+    else:
+        raise ValueError("Either user or session_id must be provided.")
+    return cart
+
+@transaction.atomic
+def add_to_cart(user=None, session_id=None, customer=None, product_id=None, quantity=1, size=None, color=None):
+    cart = get_or_create_cart(user=user, session_id=session_id, customer=customer)
+    product = Product.objects.get(item_id=product_id)
+
+    # Check if item already in cart
+    item, created = CartItem.objects.get_or_create(
+        cart=cart,
+        product=product,
+        size=size,
+        color=color,
+        defaults={"quantity": quantity}
+    )
+
+    if not created:
+        item.quantity += quantity
+
+    item.total_price = item.quantity * product.price
+    item.save()
+
+    # Recalculate cart total
+    cart.total_amount = cart.calculate_total_amount()
+    cart.save()
+    return item
