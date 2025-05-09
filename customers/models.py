@@ -12,8 +12,7 @@ class Customer(models.Model):
     session = models.CharField(max_length=255, null=True, blank=True, help_text="Session ID for anonymous users")  # This is the logic for anonymous users
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
-    first_name = models.CharField(max_length=25, default=None, blank=True)
-    last_name = models.CharField(max_length=25, default=None, blank=True)
+    full_name = models.CharField(max_length=25, default=None, blank=True)
     email = models.EmailField(default=None, unique=True, null=False, blank=False)
     phone = PhoneNumberField(_("Phone Number"))
     address = models.CharField(max_length=100, default=None, blank=False, null=False)
@@ -24,5 +23,5 @@ class Customer(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}" 
+        return f"Customer: {self.full_name} | {self.email}" if self.user else f"Customer profile for session id: {self.session}"
     
