@@ -3,7 +3,6 @@ from customers.models import Customer
 from uuid import uuid4
 from products.models import Product
 import uuid
-from django.core.exceptions import ValidationError
 from django.db.models import Sum
 from django.contrib.auth.models import User
 
@@ -27,14 +26,14 @@ class Cart(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Cart for: {self.customer.first_name} |  {self.customer.email}" if self.customer else f"Cart for session id: {self.session}"
+        return f"Cart for: {self.customer.full_name} |  {self.customer.email}" if self.customer else f"Cart for session id: {self.session}"
     
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="items", help_text="The cart this item belongs to")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="cart_items")
-    size = models.CharField(max_length=10, default=None, blank=True, null=True)
-    color = models.CharField(max_length=20, default=None, blank=True, null=True)
+    size = models.CharField(max_length=50, default=None, blank=True, null=True)
+    color = models.CharField(max_length=50, default=None, blank=True, null=True)
     quantity = models.PositiveIntegerField(default=1)
     total_price = models.FloatField(default=0.00, blank=True, null=True)
     
