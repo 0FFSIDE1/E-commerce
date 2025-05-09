@@ -1,11 +1,10 @@
 from django.shortcuts import get_object_or_404
 from carts.models import CartItem
-from services.utils.cart import save_cart
 from asgiref.sync import sync_to_async
 
 # Convert the product creation function into an async callable
 @sync_to_async
-def create_cartitem(product, cart):
+def create_cartitem(product, cart, size, color):
     """
     This function creates a cart item for a specific product and cart.
     If the cart item already exists, the quantity is increased by one. 
@@ -15,15 +14,14 @@ def create_cartitem(product, cart):
     cartitem, created = CartItem.objects.get_or_create(
         product=product,
         cart=cart,
-
+        size=size,
+        color=color,
     )
     if created:
         pass
     else:
         cartitem.quantity += 1
     cartitem.save()
-        
-   
     return cartitem
 
 @sync_to_async
@@ -44,7 +42,8 @@ def get_cart_item_details(item):
         'available_size': item.product.available_sizes,
         'available_color': item.product.available_colors,
         'price': item.product.price,
-        'total_price': item.total_price
+        'total_price': item.total_price, 
+        'total_amount': item.cart.total_amount,
     }
 
 async def get_cart_items_details(cart_items):
@@ -66,31 +65,6 @@ def save_cartitem(cartitem):
 def delete_cartitem(cartitem):
     """This function saves a cart item to the database."""
     cartitem.delete()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# async def get_cartitem(pk):
-#     return await sync_to_async(CartItem.objects.get)(pk=pk)
 
 async def update_cartitem(pk, fields):
     cartitem = CartItem.objects.filter(pk=pk).update(**fields)
